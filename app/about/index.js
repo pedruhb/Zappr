@@ -14,14 +14,14 @@ ipcMain.on("about:close", () => {
 
 ipcMain.handle("about:get-info", () => {
   return {
-    name: "TuxChat",
+    name: "Zappr",
     version: app.getVersion(),
     electronVersion: process.versions.electron,
     chromeVersion: process.versions.chrome,
     nodeVersion: process.versions.node,
     platform: process.platform,
     arch: process.arch,
-    homepage: "https://github.com/histerick/tuxchat",
+    homepage: "https://github.com/pedruhb/Zappr",
   };
 });
 

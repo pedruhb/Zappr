@@ -54,8 +54,12 @@ const needsX11Relaunch =
 // removed right away: this process itself launches other sessions (see
 // deepLinks/forward.js, sessions/), and they must not inherit it and
 // watch a parent that was never theirs.
-const relaunchParentPid = Number(process.env.TUXCHAT_RELAUNCH_PARENT) || 0;
-delete process.env.TUXCHAT_RELAUNCH_PARENT;
+const relaunchParentPid =
+  Number(
+    process.env.ZAPPR_RELAUNCH_PARENT || process.env.ZAPPR_RELAUNCH_PARENT,
+  ) || 0;
+delete process.env.ZAPPR_RELAUNCH_PARENT;
+delete process.env.ZAPPR_RELAUNCH_PARENT;
 
 // The parent forwards every quit it can see (will-quit, below), but
 // SIGKILL can't be seen — kill -9, the OOM killer, a "force quit" in a
@@ -93,7 +97,7 @@ if (needsX11Relaunch) {
     process.argv.slice(1).concat("--ozone-platform=x11"),
     {
       stdio: "inherit",
-      env: { ...process.env, TUXCHAT_RELAUNCH_PARENT: String(process.pid) },
+      env: { ...process.env, ZAPPR_RELAUNCH_PARENT: String(process.pid) },
     },
   );
   // Not process.on('SIGTERM'): Electron installs its own SIGTERM/SIGINT/
@@ -111,30 +115,32 @@ if (needsX11Relaunch) {
   });
   child.on("error", () => app.exit(1));
   child.on("exit", (code, signal) => app.exit(signal ? 1 : (code ?? 0)));
-} else if (process.argv.includes("--tuxchat-deep-link-router")) {
+} else if (
+  process.argv.includes("--zappr-deep-link-router") ||
+  process.argv.includes("--zappr-deep-link-router")
+) {
   // A whatsapp:// link was handed to the router .desktop entry, not to a
   // real WhatsApp session — see deepLinks/router-install.js. This process
   // never opens the app's own window; it only decides which session
   // should get the link, forwards it there, and exits.
   //
   // Dedicated userData dir: without this, Electron falls back to its
-  // default (derived from package.json's name, lowercase "tuxchat") and
-  // creates a stray profile directory — confirmed happening live on
-  // 2026-09-21. It must never point at a real session's own --user-data-dir
+  // default (derived from package.json's name, lowercase "zappr") and
+  // creates a stray profile directory. It must never point at a real session's own --user-data-dir
   // (main or extra), since that session's own process may be running and
   // actively using its profile's SQLite/LevelDB files concurrently.
   // Underscore, not hyphen — same reasoning as ROUTER_DESKTOP_ID: a real
-  // session named "Router" would slugify to desktopId "tuxchat-router"
+  // session named "Router" would slugify to desktopId "zappr-router"
   // and its --user-data-dir would collide with this one otherwise.
   app.setPath(
     "userData",
-    path.join(app.getPath("home"), ".config", "tuxchat_router"),
+    path.join(app.getPath("home"), ".config", "zappr_router"),
   );
   app
     .whenReady()
     .then(() => require("./router").run(process.argv))
     .catch((err) => {
-      console.error("Fallo el router de enlaces de TuxChat:", err);
+      console.error("Fallo el router de enlaces de Zappr:", err);
       app.exit(1);
     });
 } else {
@@ -154,7 +160,7 @@ if (needsX11Relaunch) {
 
   // Confirmed live: Electron ignores --class and derives the window's
   // WM_CLASS (X11) / app_id (Wayland) from the desktop name instead —
-  // package.json's "tuxchat.desktop" for every session. GNOME then folds
+  // package.json's "zappr.desktop" for every session. GNOME then folds
   // all sessions into the main icon, and since notifications carry the
   // same desktop name, they all land on that icon too. Pointing it at
   // this session's own .desktop (StartupWMClass=<class>, see sessions/)
@@ -227,7 +233,7 @@ if (needsX11Relaunch) {
         // the chain) while menu/tray/session setup quietly never finishes,
         // with nothing in the UI hinting that anything went wrong. Exactly
         // what happened with the missing-icon bug this guards against.
-        console.error("Fallo al inicializar TuxChat:", err);
+        console.error("Fallo al inicializar Zappr:", err);
       });
 
     app.on("window-all-closed", () => {

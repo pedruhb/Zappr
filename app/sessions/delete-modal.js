@@ -4,15 +4,15 @@ const params = new URLSearchParams(window.location.search);
 const desktopId = params.get("desktopId") || "";
 const localeParam = params.get("locale") || "";
 const LOCALE = ["pt", "es", "en"].includes(localeParam) ? localeParam : "en";
-const L = (window.TUXCHAT_STRINGS &&
-  window.TUXCHAT_STRINGS[LOCALE] &&
-  window.TUXCHAT_STRINGS[LOCALE].deleteModal) ||
-  (window.TUXCHAT_STRINGS &&
-    window.TUXCHAT_STRINGS.en &&
-    window.TUXCHAT_STRINGS.en.deleteModal) || {
+const L = (window.ZAPPR_STRINGS &&
+  window.ZAPPR_STRINGS[LOCALE] &&
+  window.ZAPPR_STRINGS[LOCALE].deleteModal) ||
+  (window.ZAPPR_STRINGS &&
+    window.ZAPPR_STRINGS.en &&
+    window.ZAPPR_STRINGS.en.deleteModal) || {
     title: "Delete Session",
-    mainCantDelete: "The main TuxChat session cannot be deleted.",
-    subtext: "Additional TuxChat session",
+    mainCantDelete: "The main Zappr session cannot be deleted.",
+    subtext: "Additional Zappr session",
     warning:
       "The login and all local data for this session will be permanently deleted from this machine.",
     cancel: "Cancel",
@@ -55,8 +55,8 @@ function getInitials(name) {
 }
 
 async function init() {
-  if (!desktopId || desktopId === "tuxchat") {
-    sessionNameEl.textContent = "TuxChat";
+  if (!desktopId || desktopId === "zappr") {
+    sessionNameEl.textContent = "Zappr";
     errorEl.textContent = L.mainCantDelete;
     errorEl.hidden = false;
     confirmBtn.disabled = true;

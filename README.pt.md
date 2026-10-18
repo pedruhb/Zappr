@@ -1,7 +1,7 @@
-# TuxChat
+# Zappr
 
-![License](https://img.shields.io/github/license/histerick/tuxchat)
-![Latest release](https://img.shields.io/github/v/release/histerick/tuxchat)
+![License](https://img.shields.io/github/license/pedruhb/Zappr)
+![Latest release](https://img.shields.io/github/v/release/pedruhb/Zappr)
 
 [English](README.md) · [Español](README.es.md) · **Português (Brasil)**
 
@@ -37,14 +37,14 @@ Cliente desktop não-oficial para WhatsApp Web no Linux e Windows (Electron), co
   - **Português do Brasil (Português - Brasil)**
 - Alterne o idioma a qualquer momento pelo menu **Arquivo > Idioma** / **File > Language**. Todas as barras, menus e caixas de diálogo são atualizados em tempo real e a preferência é salva.
 
-### ℹ️ Janela "Sobre o TuxChat"
+### ℹ️ Janela "Sobre o Zappr"
 
-- Acesse via menu superior **Sobre > Sobre o TuxChat**.
+- Acesse via menu superior **Sobre > Sobre o Zappr**.
 - Exibe versão do aplicativo, runtime (Electron, Chromium, Node.js), arquitetura da plataforma e link direto para o repositório do projeto no GitHub.
 
 ### 🔗 Suporte a Links do WhatsApp (`whatsapp://` e `wa.me`)
 
-- O TuxChat se registra no sistema operacional como aplicativo padrão para o protocolo `whatsapp://`.
+- O Zappr se registra no sistema operacional como aplicativo padrão para o protocolo `whatsapp://`.
 - Links clicados em navegadores ou e-mails abrem diretamente a conversa na sessão ativa ou no seletor integrado de contas.
 - **Seletor de conta com opção de ocultar**: escolha rapidamente qual sessão abrirá o link, selecione com duplo-clique ou Enter, e oculte sessões que não deseja que apareçam na lista de escolha.
 - Sessão padrão configurável a qualquer momento em **Arquivo > Configurações > Links do WhatsApp...**.
@@ -58,11 +58,11 @@ Cliente desktop não-oficial para WhatsApp Web no Linux e Windows (Electron), co
 
 ## Instalação
 
-Baixe o instalador na página de [Releases](https://github.com/histerick/tuxchat/releases):
+Baixe o instalador na página de [Releases](https://github.com/pedruhb/Zappr/releases):
 
 - **Ubuntu/Debian (.deb):**
   ```bash
-  sudo apt install ./tuxchat_<versao>_amd64.deb
+  sudo apt install ./zappr_<versao>_amd64.deb
   ```
   Ou abra com dois cliques no instalador gráfico de pacotes da sua distribuição.
 - **Qualquer outra distribuição Linux (AppImage):**

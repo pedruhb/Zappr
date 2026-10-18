@@ -2,18 +2,18 @@
 
 const urlParams = new URLSearchParams(window.location.search);
 const localeParam = urlParams.get("locale") || "";
-const LOCALE = ["pt", "es", "en"].includes(localeParam) ? localeParam : "en";
-const L = (window.TUXCHAT_STRINGS &&
-  window.TUXCHAT_STRINGS[LOCALE] &&
-  window.TUXCHAT_STRINGS[LOCALE].aboutModal) ||
-  (window.TUXCHAT_STRINGS &&
-    window.TUXCHAT_STRINGS.en &&
-    window.TUXCHAT_STRINGS.en.aboutModal) || {
-    title: "About TuxChat",
-    desc: "Desktop client for WhatsApp Web with support for multiple isolated sessions.",
-    platform: "Platform",
-    repository: "Project repository",
-    close: "Close",
+const LOCALE = ["pt", "es", "en"].includes(localeParam) ? localeParam : "pt";
+const L = (window.ZAPPR_STRINGS &&
+  window.ZAPPR_STRINGS[LOCALE] &&
+  window.ZAPPR_STRINGS[LOCALE].aboutModal) ||
+  (window.ZAPPR_STRINGS &&
+    window.ZAPPR_STRINGS.pt &&
+    window.ZAPPR_STRINGS.pt.aboutModal) || {
+    title: "Sobre o Zappr",
+    desc: "Cliente desktop para WhatsApp Web com suporte a múltiplas sessões isoladas.",
+    platform: "Plataforma",
+    repository: "Repositório do projeto",
+    close: "Fechar",
   };
 
 document.documentElement.lang = LOCALE;
@@ -71,7 +71,7 @@ document.addEventListener("keydown", (e) => {
 
 repoBtn.addEventListener("click", () => {
   if (window.aboutAPI && typeof window.aboutAPI.openLink === "function") {
-    window.aboutAPI.openLink("https://github.com/histerick/tuxchat");
+    window.aboutAPI.openLink("https://github.com/pedruhb/Zappr");
   }
 });
 

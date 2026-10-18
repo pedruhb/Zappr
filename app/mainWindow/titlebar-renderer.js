@@ -4,7 +4,7 @@ const menusEl = document.getElementById("menus");
 const titleEl = document.getElementById("title");
 const sidebarEl = document.getElementById("sessions-sidebar");
 
-let currentActiveId = "tuxchat";
+let currentActiveId = "zappr";
 let currentSessions = [];
 const unreadCounts = new Map(); // desktopId -> unread count
 
@@ -172,11 +172,11 @@ function updateActiveSidebar() {
   );
   if (activeSession) {
     let name = activeSession.profileName || "";
-    const m = /^TuxChat\s*\((.+)\)$/i.exec(name);
+    const m = /^Zappr\s*\((.+)\)$/i.exec(name);
     if (m) {
       name = m[1].charAt(0).toUpperCase() + m[1].slice(1);
     }
-    const titleText = name ? `TuxChat - ${name}` : "TuxChat";
+    const titleText = name ? `Zappr - ${name}` : "Zappr";
     titleEl.textContent = titleText;
     document.title = titleText;
   }
@@ -213,7 +213,7 @@ function buildSidebarDOM() {
       img.alt = session.profileName;
       img.setAttribute("draggable", "false");
       btn.appendChild(img);
-    } /* else if (session.desktopId === "tuxchat") {
+    } /* else if (session.desktopId === "zappr") {
       btn.innerHTML = WHATSAPP_ICON_SVG;
     }  */ else {
       btn.textContent = getInitials(session.profileName);

@@ -13,7 +13,8 @@ const es = {
     file: "Archivo",
     language: "Idioma",
     quit: "Salir",
-    sessions: "Sesiones",
+    settings: "Configuración",
+    sessions: "Configuración",
     addSession: "Añadir sesión...",
     editSession: "Editar sesión...",
     renameSession: "Renombrar sesión...",
@@ -34,7 +35,7 @@ const es = {
     fullscreen: "Pantalla completa",
     about: "Acerca de",
     repository: "Repositorio",
-    aboutApp: "Acerca de TuxChat",
+    aboutApp: "Acerca de Zappr",
   },
   tray: {
     show: "Mostrar",
@@ -45,8 +46,7 @@ const es = {
   },
   sessions: {
     mainLabel: "Principal",
-    desktopComment: (name) =>
-      `WhatsApp Web (sesión "${name}", proyecto TuxChat)`,
+    desktopComment: (name) => `WhatsApp Web (sesión "${name}", proyecto Zappr)`,
     errors: {
       emptyName: "Escribí un nombre para la sesión.",
       newlineName: "El nombre no puede tener saltos de línea.",
@@ -65,8 +65,8 @@ const es = {
     },
   },
   router: {
-    desktopName: "TuxChat (enlaces)",
-    desktopComment: "Abre enlaces whatsapp:// con una sesión de TuxChat",
+    desktopName: "Zappr (enlaces)",
+    desktopComment: "Abre enlaces whatsapp:// con una sesión de Zappr",
   },
 };
 
@@ -78,7 +78,8 @@ const en = {
     file: "File",
     language: "Language",
     quit: "Quit",
-    sessions: "Sessions",
+    settings: "Settings",
+    sessions: "Settings",
     addSession: "Add session...",
     editSession: "Edit session...",
     renameSession: "Rename session...",
@@ -99,7 +100,7 @@ const en = {
     fullscreen: "Toggle Full Screen",
     about: "About",
     repository: "Repository",
-    aboutApp: "About TuxChat",
+    aboutApp: "About Zappr",
   },
   tray: {
     show: "Show",
@@ -110,8 +111,7 @@ const en = {
   },
   sessions: {
     mainLabel: "Main",
-    desktopComment: (name) =>
-      `WhatsApp Web (session "${name}", TuxChat project)`,
+    desktopComment: (name) => `WhatsApp Web (session "${name}", Zappr project)`,
     errors: {
       emptyName: "Type a name for the session.",
       newlineName: "The name can't contain line breaks.",
@@ -130,8 +130,8 @@ const en = {
     },
   },
   router: {
-    desktopName: "TuxChat (links)",
-    desktopComment: "Opens whatsapp:// links with a TuxChat session",
+    desktopName: "Zappr (links)",
+    desktopComment: "Opens whatsapp:// links with a Zappr session",
   },
 };
 
@@ -143,7 +143,8 @@ const pt = {
     file: "Arquivo",
     language: "Idioma",
     quit: "Sair",
-    sessions: "Sessões",
+    settings: "Configurações",
+    sessions: "Configurações",
     addSession: "Adicionar sessão...",
     editSession: "Editar sessão...",
     renameSession: "Renomear sessão...",
@@ -164,7 +165,7 @@ const pt = {
     fullscreen: "Tela cheia",
     about: "Sobre",
     repository: "Repositório",
-    aboutApp: "Sobre o TuxChat",
+    aboutApp: "Sobre o Zappr",
   },
   tray: {
     show: "Exibir",
@@ -175,8 +176,7 @@ const pt = {
   },
   sessions: {
     mainLabel: "Principal",
-    desktopComment: (name) =>
-      `WhatsApp Web (sessão "${name}", projeto TuxChat)`,
+    desktopComment: (name) => `WhatsApp Web (sessão "${name}", projeto Zappr)`,
     errors: {
       emptyName: "Digite um nome para a sessão.",
       newlineName: "O nome não pode conter quebras de linha.",
@@ -194,8 +194,8 @@ const pt = {
     },
   },
   router: {
-    desktopName: "TuxChat (links)",
-    desktopComment: "Abre links whatsapp:// com uma sessão do TuxChat",
+    desktopName: "Zappr (links)",
+    desktopComment: "Abre links whatsapp:// com uma sessão do Zappr",
   },
 };
 

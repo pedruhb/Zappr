@@ -4,12 +4,12 @@ const urlParams = new URLSearchParams(window.location.search);
 const localeParam = urlParams.get("locale") || "";
 const LOCALE = ["pt", "es", "en"].includes(localeParam) ? localeParam : "pt";
 
-const L = (window.TUXCHAT_STRINGS &&
-  window.TUXCHAT_STRINGS[LOCALE] &&
-  window.TUXCHAT_STRINGS[LOCALE].linkPicker) ||
-  (window.TUXCHAT_STRINGS &&
-    window.TUXCHAT_STRINGS.en &&
-    window.TUXCHAT_STRINGS.en.linkPicker) || {
+const L = (window.ZAPPR_STRINGS &&
+  window.ZAPPR_STRINGS[LOCALE] &&
+  window.ZAPPR_STRINGS[LOCALE].linkPicker) ||
+  (window.ZAPPR_STRINGS &&
+    window.ZAPPR_STRINGS.en &&
+    window.ZAPPR_STRINGS.en.linkPicker) || {
     windowTitle: "Abrir link do WhatsApp",
     heading: "Com qual sessão deseja enviar a mensagem?",
     messageLabel: "Mensagem:",
@@ -17,7 +17,7 @@ const L = (window.TUXCHAT_STRINGS &&
     autoSend: "Enviar automaticamente",
     autoRouteOldest: "Alternar sessões automaticamente",
     autoRouteOldestHelp:
-      "Ao receber um link pelo protocolo, o TuxChat enviará a mensagem automaticamente para a sessão que foi usada há mais tempo, alternando entre as contas visíveis. Sessões ocultas não entram nesse sorteio.",
+      "Ao receber um link pelo protocolo, o Zappr enviará a mensagem automaticamente para a sessão que foi usada há mais tempo, alternando entre as contas visíveis. Sessões ocultas não entram nesse sorteio.",
     sessionsHeading: "Enviar com a sessão:",
     remember: "Lembrar desta escolha para os próximos links",
     cancel: "Cancelar",
@@ -80,7 +80,7 @@ if (sessionsHeadingEl && L.sessionsHeading) {
 }
 
 try {
-  const savedAutoSend = localStorage.getItem("tuxchat_picker_auto_send");
+  const savedAutoSend = localStorage.getItem("zappr_picker_auto_send");
   if (savedAutoSend !== null && autoSendEl) {
     autoSendEl.checked = savedAutoSend === "true";
   }
@@ -91,7 +91,10 @@ try {
 if (autoSendEl) {
   autoSendEl.addEventListener("change", () => {
     try {
-      localStorage.setItem("tuxchat_picker_auto_send", String(autoSendEl.checked));
+      localStorage.setItem(
+        "zappr_picker_auto_send",
+        String(autoSendEl.checked),
+      );
     } catch {
       // Local storage unavailable
     }
@@ -99,10 +102,17 @@ if (autoSendEl) {
 }
 
 // Auto-route switch initialization and event handling
-if (autoRouteSwitchEl && window.linkPicker && window.linkPicker.getAutoRouteOldest) {
-  window.linkPicker.getAutoRouteOldest().then((enabled) => {
-    autoRouteSwitchEl.checked = Boolean(enabled);
-  }).catch(() => {});
+if (
+  autoRouteSwitchEl &&
+  window.linkPicker &&
+  window.linkPicker.getAutoRouteOldest
+) {
+  window.linkPicker
+    .getAutoRouteOldest()
+    .then((enabled) => {
+      autoRouteSwitchEl.checked = Boolean(enabled);
+    })
+    .catch(() => {});
 
   autoRouteSwitchEl.addEventListener("change", async () => {
     try {

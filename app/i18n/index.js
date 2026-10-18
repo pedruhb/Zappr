@@ -26,8 +26,8 @@ let cachedLocale = null;
 function currentLocale() {
   if (!cachedLocale) {
     const saved = getSavedLocale();
-    // Default to 'en' when installed / no preference saved
-    cachedLocale = saved || "en";
+    // Default to 'pt' when installed / no preference saved
+    cachedLocale = saved || "pt";
   }
   return cachedLocale;
 }

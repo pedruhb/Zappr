@@ -1,18 +1,11 @@
 "use strict";
 
 const { Menu, app, ipcMain } = require("electron");
-const {
-  openAddSessionDialog,
-  openDeleteSessionDialog,
-  openRenameSessionDialog,
-  canRenameSelf,
-} = require("../sessions");
 const { openSettingsDialog } = require("../deepLinks");
 const {
   getAutoRouteOldest,
   setAutoRouteOldest,
 } = require("../deepLinks/state");
-const { openSessionColorDialog } = require("../sessionColor");
 const { openAboutModal } = require("../about");
 const { getWhatsAppContents } = require("../mainWindow");
 const { t, currentLocale, setLocale } = require("../i18n");
@@ -71,19 +64,16 @@ function buildTemplate(win) {
       { type: "separator" },
       { label: t("menu.quit"), accelerator: "CmdOrCtrl+Q", click: quit },
     ],
+    settings: [
+      { label: t("menu.whatsappLinks"), click: () => openSettingsDialog() },
+      {
+        label: t("menu.autoRouteOldest"),
+        type: "checkbox",
+        checked: getAutoRouteOldest(),
+        click: (menuItem) => setAutoRouteOldest(menuItem.checked),
+      },
+    ],
     sessions: [
-      { label: t("menu.addSession"), click: () => openAddSessionDialog() },
-      {
-        label: t("menu.renameSession"),
-        enabled: canRenameSelf(),
-        click: () => openRenameSessionDialog(),
-      },
-      {
-        label: t("menu.deleteSession"),
-        click: () => openDeleteSessionDialog(),
-      },
-      { label: t("menu.sessionColor"), click: () => openSessionColorDialog() },
-      { type: "separator" },
       { label: t("menu.whatsappLinks"), click: () => openSettingsDialog() },
       {
         label: t("menu.autoRouteOldest"),

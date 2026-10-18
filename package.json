@@ -1,13 +1,12 @@
 {
-  "name": "tuxchat",
-  "version": "0.2.7",
-  "description": "Unofficial WhatsApp Web desktop client for Linux (Electron), with full call/screen-share support, multiple isolated profiles, and whatsapp:// deep-link support.",
+  "name": "zappr",
+  "version": "0.0.1",
+  "description": "Cliente desktop moderno para WhatsApp Web (Electron), com suporte a múltiplas sessões isoladas, distribuição inteligente de links e controle de áudio individual.",
   "main": "app/index.js",
-  "desktopName": "tuxchat.desktop",
-  "homepage": "https://github.com/histerick/tuxchat",
+  "desktopName": "zappr.desktop",
+  "homepage": "https://github.com/pedruhb/Zappr",
   "author": {
-    "name": "TuxChat contributors",
-    "email": "dev@ericksalamanca.com"
+    "name": "Zappr contributors"
   },
   "license": "MIT",
   "private": true,
@@ -27,9 +26,9 @@
     "prettier": "^3.6.2"
   },
   "build": {
-    "appId": "app.tuxchat.desktop",
-    "productName": "TuxChat",
-    "executableName": "tuxchat",
+    "appId": "app.zappr.desktop",
+    "productName": "Zappr",
+    "executableName": "zappr",
     "directories": {
       "output": "dist"
     },
@@ -52,8 +51,8 @@
     },
     "publish": {
       "provider": "github",
-      "owner": "histerick",
-      "repo": "tuxchat",
+      "owner": "pedruhb",
+      "repo": "Zappr",
       "releaseType": "release"
     }
   },

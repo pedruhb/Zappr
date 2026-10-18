@@ -95,7 +95,7 @@ function persistPendingUpdate(info) {
     fs.writeFileSync(pendingUpdatePath(), JSON.stringify(payload));
   } catch (err) {
     console.error(
-      "TuxChat updater: no se pudo guardar la nota de la versión descargada:",
+      "Zappr updater: no se pudo guardar la nota de la versión descargada:",
       err,
     );
   }
@@ -114,7 +114,7 @@ function startBackgroundChecks() {
   // Update checks are best-effort background noise: no network, GitHub
   // hiccup, or rate limit should ever surface to the user.
   autoUpdater.on("error", (err) => {
-    console.error("TuxChat updater:", err && err.message ? err.message : err);
+    console.error("Zappr updater:", err && err.message ? err.message : err);
   });
 
   const check = () => autoUpdater.checkForUpdates().catch(() => {});

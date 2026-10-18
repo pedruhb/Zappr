@@ -10,7 +10,8 @@ contextBridge.exposeInMainWorld("deepLinksDialog", {
   clearHandler: () => ipcRenderer.invoke("deeplinks:clear-handler"),
   toggleHide: (desktopId, hide) =>
     ipcRenderer.invoke("deeplinks:toggle-hide", { desktopId, hide }),
-  getAutoRouteOldest: () => ipcRenderer.invoke("deeplinks:get-auto-route-oldest"),
+  getAutoRouteOldest: () =>
+    ipcRenderer.invoke("deeplinks:get-auto-route-oldest"),
   setAutoRouteOldest: (enabled) =>
     ipcRenderer.invoke("deeplinks:set-auto-route-oldest", enabled),
   close: () => ipcRenderer.send("deeplinks:close"),

@@ -7,19 +7,16 @@ const { execFile } = require("node:child_process");
 const { refreshDesktopCaches } = require("../sessions");
 const { t } = require("../i18n");
 
-// Distinct from every session's own tuxchat[-<slug>].desktop: this one
+// Distinct from every session's own zappr[-<slug>].desktop: this one
 // isn't a WhatsApp window at all, just the thing the system hands
 // whatsapp:// links to. NoDisplay keeps it out of app grids/search — it's
 // not something a user launches on purpose.
 //
 // Underscore, not hyphen: sessions/index.js's DESKTOP_RE
-// (^tuxchat(?:-(.+))?\.desktop$) treats anything named tuxchat-<slug> as
-// a real session to list/delete. tuxchat-router.desktop collided with
-// that and showed up as a bogus "router" session in every picker —
-// confirmed live on 2026-09-21. Keeping the router out of the
-// tuxchat-<slug> namespace entirely avoids relying on both files staying
-// in sync by convention.
-const ROUTER_DESKTOP_ID = "tuxchat_router";
+// (^(?:zappr|zappr)(?:-(.+))?\.desktop$) treats anything named zappr-<slug> as
+// a real session to list/delete. Keeping the router out of the
+// zappr-<slug> namespace entirely avoids collisions.
+const ROUTER_DESKTOP_ID = "zappr_router";
 
 function routerExecLine() {
   // Same reasoning as buildLauncherScript() in sessions/index.js: under an
@@ -31,7 +28,7 @@ function routerExecLine() {
   // buildLauncherScript() in sessions/index.js. A packaged build's own
   // executable already knows its app.
   if (!app.isPackaged) parts.push(app.getAppPath());
-  parts.push("--tuxchat-deep-link-router", "%u");
+  parts.push("--zappr-deep-link-router", "%u");
   return parts.join(" ");
 }
 
@@ -45,7 +42,7 @@ function buildRouterDesktopEntry() {
       `Name=${t("router.desktopName")}`,
       `Comment=${t("router.desktopComment")}`,
       `Exec=${routerExecLine()}`,
-      "Icon=tuxchat",
+      "Icon=zappr",
       "NoDisplay=true",
       "MimeType=x-scheme-handler/whatsapp;",
       "Categories=Network;InstantMessaging;",
@@ -82,40 +79,36 @@ function ensureRouterRegisteredWin32() {
       commandStr,
     );
 
-    regAdd("HKCU\\Software\\Classes\\TuxChat.whatsapp", "", "URL:whatsapp");
-    regAdd("HKCU\\Software\\Classes\\TuxChat.whatsapp", "URL Protocol", "");
+    regAdd("HKCU\\Software\\Classes\\Zappr.whatsapp", "", "URL:whatsapp");
+    regAdd("HKCU\\Software\\Classes\\Zappr.whatsapp", "URL Protocol", "");
     if (fs.existsSync(iconPath)) {
       regAdd(
-        "HKCU\\Software\\Classes\\TuxChat.whatsapp\\DefaultIcon",
+        "HKCU\\Software\\Classes\\Zappr.whatsapp\\DefaultIcon",
         "",
         `${iconPath},0`,
       );
     }
     regAdd(
-      "HKCU\\Software\\Classes\\TuxChat.whatsapp\\shell\\open\\command",
+      "HKCU\\Software\\Classes\\Zappr.whatsapp\\shell\\open\\command",
       "",
       commandStr,
     );
 
+    regAdd("HKCU\\Software\\Zappr\\Capabilities", "ApplicationName", "Zappr");
     regAdd(
-      "HKCU\\Software\\TuxChat\\Capabilities",
-      "ApplicationName",
-      "TuxChat",
-    );
-    regAdd(
-      "HKCU\\Software\\TuxChat\\Capabilities",
+      "HKCU\\Software\\Zappr\\Capabilities",
       "ApplicationDescription",
-      "TuxChat - WhatsApp Web Client",
+      "Zappr - WhatsApp Web Client",
     );
     regAdd(
-      "HKCU\\Software\\TuxChat\\Capabilities\\URLAssociations",
+      "HKCU\\Software\\Zappr\\Capabilities\\URLAssociations",
       "whatsapp",
-      "TuxChat.whatsapp",
+      "Zappr.whatsapp",
     );
     regAdd(
       "HKCU\\Software\\RegisteredApplications",
-      "TuxChat",
-      "Software\\TuxChat\\Capabilities",
+      "Zappr",
+      "Software\\Zappr\\Capabilities",
     );
 
     if (!app.isPackaged) {

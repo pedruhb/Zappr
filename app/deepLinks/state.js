@@ -14,13 +14,29 @@ function stateFile() {
     app && typeof app.getPath === "function"
       ? app.getPath("home")
       : require("node:os").homedir();
-  return path.join(
+  const zapprPath = path.join(
     home,
     ".local",
     "share",
-    "tuxchat",
+    "zappr",
     "deep-links.json",
   );
+  const oldPath = path.join(
+    home,
+    ".local",
+    "share",
+    "zappr",
+    "deep-links.json",
+  );
+  if (!fs.existsSync(zapprPath) && fs.existsSync(oldPath)) {
+    try {
+      fs.mkdirSync(path.dirname(zapprPath), { recursive: true });
+      fs.copyFileSync(oldPath, zapprPath);
+    } catch {
+      // Ignore migration error
+    }
+  }
+  return zapprPath;
 }
 
 function readState() {

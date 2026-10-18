@@ -4,7 +4,7 @@
 # --user-data-dir isolates cookies/localStorage, --class isolates the
 # window's WM_CLASS so the dock doesn't group it with the first profile.
 
-exec electron /home/erick/Proyectos/tuxchat \
-  --user-data-dir="$HOME/.config/tuxchat-work" \
-  --class=tuxchat-work \
+exec electron /home/erick/Proyectos/zappr \
+  --user-data-dir="$HOME/.config/zappr-work" \
+  --class=zappr-work \
   --profile-name=Trabajo

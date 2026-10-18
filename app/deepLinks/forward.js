@@ -17,8 +17,8 @@ const { listDeletableSessions } = require("../sessions");
 //   handler with this argv — Electron's built-in way to hand data to an
 //   already-running instance, no custom IPC needed.
 function launchArgsFor(desktopId) {
-  if (!desktopId || desktopId === "tuxchat") {
-    return { userDataDir: null, profileName: "", windowClass: "tuxchat" };
+  if (!desktopId || desktopId === "zappr") {
+    return { userDataDir: null, profileName: "", windowClass: "zappr" };
   }
 
   const session = listDeletableSessions().find(

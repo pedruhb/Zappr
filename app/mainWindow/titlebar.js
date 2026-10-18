@@ -67,7 +67,7 @@ function snapshot() {
     ...currentColors(),
     menus: [
       { id: "file", label: t("menu.file") },
-      { id: "sessions", label: t("menu.sessions") },
+      { id: "settings", label: t("menu.settings") },
       { id: "view", label: t("menu.view") },
       { id: "about", label: t("menu.about") },
     ],

@@ -1,105 +1,143 @@
-# TuxChat
+# Zappr ⚡
 
-![License](https://img.shields.io/github/license/histerick/tuxchat)
-![Latest release](https://img.shields.io/github/v/release/histerick/tuxchat)
+![License](https://img.shields.io/github/license/pedruhb/Zappr)
+![Latest release](https://img.shields.io/github/v/release/pedruhb/Zappr)
+![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20Windows-blue)
 
-**English** · [Español](README.es.md) · [Português](README.pt.md)
+**Português (Brasil)** · [English](README.en.md) · [Español](README.es.md)
 
-Unofficial WhatsApp Web desktop client for Linux and Windows (Electron), with full voice/video call and screen-share support, multiple isolated sessions in tabs with a Discord-style sidebar, independent per-session color customization, and `whatsapp://` link support.
-
----
-
-## Features & Highlights
-
-### 👥 Multiple Isolated Sessions in Tabs
-
-- **Discord-style right sidebar**: manage up to 6 WhatsApp accounts seamlessly within a single window.
-- **Drag-to-reorder**: easily organize sessions by dragging icons up and down with fluid visual feedback.
-- **Fast visual identification**: custom profile photos (with square cropping and automatic WebP conversion) or dynamic high-contrast initials.
-- **Instant switching**: fluid tab switching powered by Electron's `WebContentsView`, keeping memory usage low and chat sessions connected.
-- **Per-session audio & mute control**: right-click any session icon to mute audio instantly or select individual volume levels (100%, 75%, 50%, 25%, 10%, Mute). Muted accounts display a visual audio-off badge.
-- **Complete context menu**: right-click any session icon to edit profile/photo, change color, adjust volume, mute, or delete.
-
-### 🎨 Independent & Dynamic Session Colors
-
-- Each session has its own color saved independently.
-- **Custom color picker**: choose from curated presets or pick any custom HEX color with the integrated color picker.
-- **Right sidebar**:
-  - Inactive session: colored icon / initials with matching subtle border.
-  - Active session: filled with the session color, automatic contrast text calculation (YIQ), illuminated glow shadow, and matching colored indicator pill.
-- **Synchronized title bar**: switching session tabs instantly updates the top title bar color to match the active account.
-
-### 🌐 Multi-language Support
-
-- Three complete languages out of the box:
-  - **English** — default on installation / first run.
-  - **Español (Spanish)**
-  - **Português (Brasil)**
-- Switch anytime via **File > Language**. Menus, dialogs, and toolbars update immediately and preferences are persisted.
-
-### ℹ️ "About TuxChat" Dialog
-
-- Accessible via the top menu **About > About TuxChat**.
-- Displays application version, Electron, Chromium, and Node.js runtime versions, platform architecture, and a direct link to the GitHub repository.
-
-### 🔗 WhatsApp Links (`whatsapp://` & `wa.me`)
-
-- TuxChat registers itself as the system handler for `whatsapp://` links.
-- Clicking links from browsers or emails opens conversations directly in your active session or prompts a modern account selector.
-- **Link picker modal with hide option**: choose which account handles the link, select via double-click or Enter, and hide sessions you don't want in the prompt list.
-- Default session can also be configured in **File > Settings > WhatsApp links...**.
-
-### 💬 In-chat Links
-
-- Links received in chats (Zoom, Google Meet, external websites) open directly in your default web browser rather than popup windows.
-- Right-click any link to **Copy link**.
+Cliente desktop moderno e de alta performance para WhatsApp Web construído em Electron para **Linux** e **Windows**, com suporte nativo a chamadas de voz e vídeo, compartilhamento de tela, múltiplas contas isoladas em abas com barra lateral estilo Discord, distribuição inteligente de links `whatsapp://`, controle granular de áudio por sessão e badges de mensagens não lidas em tempo real.
 
 ---
 
-## Installation
+## ✨ Recursos em Destaque
 
-Download the installer from [Releases](https://github.com/histerick/tuxchat/releases):
+### 👥 Múltiplas Contas Isoladas em Abas
 
-- **Ubuntu/Debian (.deb):**
-  ```bash
-  sudo apt install ./tuxchat_<version>_amd64.deb
-  ```
-  Or double-click it in your desktop package manager.
-- **Any other Linux distro (AppImage):**
-  Make it executable (`chmod +x TuxChat-*.AppImage`) and run directly. No installation or `libfuse2` required.
-- **Windows:**
-  Run via installer or terminal.
+- **Barra lateral estilo Discord**: Gerencie até 6 contas do WhatsApp simultaneamente em uma única janela elegante.
+- **Isolamento total de sessão**: Cada aba opera em uma partição isolada do Electron (`persist:partition`), mantendo dados, logins e cookies 100% segregados e seguros.
+- **Reorganização por Arrastar e Soltar (Drag & Drop)**: Reordene facilmente suas contas na barra lateral arrastando os ícones para cima ou para baixo com indicador visual verde e animação fluida.
+- **Identificação visual rápida**: Personalize o avatar de cada sessão com fotos customizadas (corte quadrado e compressão automática em WebP) ou iniciais dinâmicas de alto contraste.
+- **Alternância ultrarrápida**: Troca instantânea de abas gerenciada via `WebContentsView`, mantendo o consumo de memória baixo e todas as conexões de chat ativas em segundo plano.
 
-### Updates
+### 🔴 Badges de Mensagens Não Lidas em Tempo Real
 
-- **AppImage:** updates silently in the background, checking on launch and every 4 hours while running. The next time you open the app, a release notes window is presented.
-- **.deb:** managed by `apt` — download new `.deb` packages from Releases.
+- **Contador individual por sessão**: Cada ícone na barra lateral exibe um badge flutuante com a contagem exata de conversas não lidas, extraído diretamente da interface do WhatsApp Web.
+- **Animação fluida de pop**: Efeito _bounce_ quando novas mensagens chegam para chamar sua atenção discretamente.
+- **Sincronização global**: Integração com a contagem da barra de tarefas/dock do sistema operacional.
+
+### 🔀 Distribuição Inteligente de Links (`whatsapp://` e `wa.me`)
+
+- **Manipulador nativo de protocolo**: O Zappr registra-se automaticamente no Linux e Windows para interceptar links `whatsapp://` e URLs `wa.me`.
+- **Roteamento automático para a sessão ociosa há mais tempo**: Ative a opção de envio automático para distribuir mensagens recebidas em rotação inteligente (_round-robin_), direcionando o lead ou contato para a sessão que não atendeu links recentemente.
+- **Envio automático com contagem regressiva**: Pré-visualize e edite a mensagem no modal antes do envio ou ative o envio automático instantâneo com barra de contagem regressiva e botão de cancelamento rápido.
+- **Seletor moderno com atalhos de teclado**:
+  - Selecione a sessão digitando o número correspondente (`1` a `6`).
+  - Navegue com as setas do teclado e confirme com `Enter` ou dê um duplo clique no card.
+  - Oculte sessões específicas do seletor para evitar envios acidentais em contas pessoais.
+
+### 🔊 Controle de Áudio Granular por Sessão
+
+- **Ajuste individual de volume**: Defina o volume de notificações de cada conta independentemente (**100%**, **75%**, **50%**, **25%**, **10%** ou **Mudo**).
+- **Mudo rápido com um clique**: Silencie qualquer sessão instantaneamente pelo menu de clique direito.
+- **Indicador visual de silêncio**: Um badge de alto-falante cortado é exibido sobre a foto da sessão quando ela estiver mutada, evitando surpresas.
+
+### 🎨 Personalização de Cores e Temas
+
+- **Cores independentes**: Atribua uma cor exclusiva para cada conta através do seletor de cores nativo (com suporte a qualquer código HEX ou paleta predefinida).
+- **Barra de título dinâmica**: A barra superior sincroniza a sua tonalidade automaticamente com a cor da sessão ativa no momento.
+- **Feedback visual completo**: Indicadores laterais (_pill_), bordas e sombras com efeito _glow_ adaptam-se dinamicamente à cor escolhida.
+
+### 🌐 Suporte Multilíngue (Padrão: Português do Brasil)
+
+- O Zappr vem configurado por padrão em **Português do Brasil (`pt-BR`)**, contando também com suporte completo a **Inglês (`en`)** e **Espanhol (`es`)**.
+- Troque o idioma a qualquer instante pelo menu **Arquivo > Idioma** sem necessidade de reiniciar.
+
+### 💬 Navegação e Links Externos Seguros
+
+- Links compartilhados nas conversas (Zoom, Google Meet, YouTube, links externos) abrem automaticamente no navegador padrão do seu sistema operacional, preservando a integridade da janela do WhatsApp.
+- Menu de contexto nativo com atalho para copiar links.
 
 ---
 
-## Development
+## ⌨️ Atalhos de Teclado
 
-Requirements: Node.js (v20+ recommended) and npm.
+| Atalho                          | Ação                                                            |
+| :------------------------------ | :-------------------------------------------------------------- |
+| `Ctrl + 1` até `Ctrl + 6`       | Alternar diretamente para a sessão correspondente               |
+| `Ctrl + N`                      | Adicionar uma nova sessão do WhatsApp                           |
+| `Ctrl + R` / `F5`               | Recarregar a sessão ativa                                       |
+| `Ctrl + Shift + R`              | Forçar recarga da sessão ativa (limpando cache de renderização) |
+| `Ctrl + +` / `Ctrl + -`         | Aumentar ou diminuir o zoom                                     |
+| `Ctrl + 0`                      | Restaurar zoom padrão (100%)                                    |
+| `F11`                           | Alternar tela cheia                                             |
+| `1` a `6` _(no modal de links)_ | Escolher a sessão para abrir o link                             |
+| `Enter` _(no modal de links)_   | Confirmar abertura do link na sessão selecionada                |
+| `Esc`                           | Fechar modais e janelas secundárias                             |
+
+---
+
+## 🚀 Instalação
+
+Baixe a versão mais recente diretamente na aba de [Releases](https://github.com/pedruhb/Zappr/releases):
+
+### Linux (Ubuntu / Debian / Mint)
+
+Baixe o arquivo `.deb` e instale via terminal ou instalador gráfico:
 
 ```bash
-# Install dependencies
+sudo apt install ./zappr_<versao>_amd64.deb
+```
+
+### Linux (Qualquer distribuição via AppImage)
+
+Baixe o `.AppImage`, conceda permissão de execução e execute:
+
+```bash
+chmod +x Zappr-*.AppImage
+./Zappr-*.AppImage
+```
+
+> O AppImage inclui atualizações automáticas silenciosas em segundo plano via `electron-updater`.
+
+### Windows
+
+Baixe o executável de instalação ou o pacote portátil disponível na página de lançamentos e execute diretamente.
+
+---
+
+## 🛠️ Desenvolvimento e Contribuição
+
+Requisitos: **Node.js 20+** e **npm**.
+
+```bash
+# 1. Clone o repositório
+git clone https://github.com/pedruhb/Zappr.git
+cd Zappr
+
+# 2. Instale as dependências
 npm install
 
-# Start development mode with hot-reload (nodemon)
+# 3. Inicie o servidor de desenvolvimento com hot-reload
 npm run dev
 
-# Run directly with Electron
+# 4. Executar diretamente com Electron
 npm start
 
-# Run linter
+# 5. Executar verificação de lint
 npm run lint
 
-# Format code with Prettier
+# 6. Formatar o código
 npm run format
+
+# 7. Gerar pacote de distribuição
+npm run dist
 ```
 
 ---
 
-## License
+## 📄 Licença
 
-Distributed under the [MIT](LICENSE) license.
+Distribuído sob a licença **MIT**. Consulte o arquivo [LICENSE](LICENSE) para mais informações.
+
+_Agradecimento especial aos contribuidores originais do projeto TuxChat pelo excelente alicerce de código._

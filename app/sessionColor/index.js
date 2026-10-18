@@ -57,7 +57,7 @@ function registerSessionColor(win, trayIcon, appConfig) {
   config = appConfig;
   try {
     const { getSessionColor } = require("../sessions");
-    const color = getSessionColor("tuxchat");
+    const color = getSessionColor("zappr");
     if (color) applyIcon(color, { updateDock: false });
   } catch {
     // Failed to read session color
@@ -69,7 +69,7 @@ function registerSessionColor(win, trayIcon, appConfig) {
 function initSessionColor() {
   try {
     const { getSessionColor } = require("../sessions");
-    titlebar.setColor(getSessionColor("tuxchat"));
+    titlebar.setColor(getSessionColor("zappr"));
   } catch {
     //
   }
@@ -87,7 +87,7 @@ function normalizeHexColor(color) {
 
 ipcMain.handle("session-color:get", (_event, targetDesktopId) => {
   const { getSessionColor, getActiveSessionId } = require("../sessions");
-  const desktopId = targetDesktopId || getActiveSessionId() || "tuxchat";
+  const desktopId = targetDesktopId || getActiveSessionId() || "zappr";
   return { desktopId, color: getSessionColor(desktopId), palette: PALETTE };
 });
 
@@ -96,15 +96,15 @@ ipcMain.handle("session-color:set", (_event, payload) => {
   let desktopId;
   let color;
   if (typeof payload === "object" && payload !== null) {
-    desktopId = payload.desktopId || getActiveSessionId() || "tuxchat";
+    desktopId = payload.desktopId || getActiveSessionId() || "zappr";
     color = payload.color;
   } else {
-    desktopId = getActiveSessionId() || "tuxchat";
+    desktopId = getActiveSessionId() || "zappr";
     color = payload;
   }
   const value = normalizeHexColor(color);
   setSessionColor(desktopId, value);
-  if (desktopId === "tuxchat" && mainWindow) {
+  if (desktopId === "zappr" && mainWindow) {
     applyIcon(value);
   }
   return { ok: true, desktopId, color: value };
@@ -126,7 +126,7 @@ function openSessionColorDialog(targetDesktopId) {
   }
 
   const { getActiveSessionId } = require("../sessions");
-  const desktopId = targetDesktopId || getActiveSessionId() || "tuxchat";
+  const desktopId = targetDesktopId || getActiveSessionId() || "zappr";
   const parent =
     mainWindow ||
     BrowserWindow.getAllWindows().find(

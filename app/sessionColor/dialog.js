@@ -4,12 +4,12 @@ const urlParams = new URLSearchParams(window.location.search);
 const localeParam = urlParams.get("locale") || "";
 const desktopIdParam = urlParams.get("desktopId") || "";
 const LOCALE = ["pt", "es", "en"].includes(localeParam) ? localeParam : "en";
-const L = (window.TUXCHAT_STRINGS &&
-  window.TUXCHAT_STRINGS[LOCALE] &&
-  window.TUXCHAT_STRINGS[LOCALE].colorDialog) ||
-  (window.TUXCHAT_STRINGS &&
-    window.TUXCHAT_STRINGS.en &&
-    window.TUXCHAT_STRINGS.en.colorDialog) || {
+const L = (window.ZAPPR_STRINGS &&
+  window.ZAPPR_STRINGS[LOCALE] &&
+  window.ZAPPR_STRINGS[LOCALE].colorDialog) ||
+  (window.ZAPPR_STRINGS &&
+    window.ZAPPR_STRINGS.en &&
+    window.ZAPPR_STRINGS.en.colorDialog) || {
     windowTitle: "Session color",
     heading: "Session color",
     hint: "Tints the title bar and the icon, to tell this account apart from the others.",

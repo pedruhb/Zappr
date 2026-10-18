@@ -24,7 +24,7 @@ function getConfig() {
   return {
     profileName,
     wmClass: args["class"] || null,
-    appName: profileName ? `TuxChat - ${profileName}` : "TuxChat",
+    appName: profileName ? `Zappr - ${profileName}` : "Zappr",
     appIcon:
       args["app-icon"] || path.join(__dirname, "..", "..", "build", "icon.png"),
     url: args["url"] || "https://web.whatsapp.com",

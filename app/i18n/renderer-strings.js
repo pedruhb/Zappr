@@ -4,11 +4,11 @@
 // Mirrors app/i18n/strings.js's locale policy but only covers dialog UI
 // text (no parametrized entries — those stay server-side, resolved by
 // the main process before an error string ever reaches a renderer).
-window.TUXCHAT_STRINGS = {
+window.ZAPPR_STRINGS = {
   es: {
     addDialog: {
       windowTitle: "Añadir sesión",
-      heading: "Nueva sesión aislada de TuxChat",
+      heading: "Nueva sesión aislada de Zappr",
       count: (count, max) => `Sesiones configuradas: ${count}/${max}`,
       namePlaceholder: "Ej: Personal, Trabajo, Familia",
       success: "¡Listo! Abriendo la sesión...",
@@ -85,8 +85,8 @@ window.TUXCHAT_STRINGS = {
       timeDays: (d) => `Usada hace ${d} días`,
     },
     changelogDialog: {
-      windowTitle: "Novedades de TuxChat",
-      heading: (version) => `TuxChat se actualizó a ${version}`,
+      windowTitle: "Novedades de Zappr",
+      heading: (version) => `Zappr se actualizó a ${version}`,
       subheading: "Esto es lo que cambió:",
       noNotes: "No hay notas de esta versión.",
       close: "Cerrar",
@@ -113,8 +113,8 @@ window.TUXCHAT_STRINGS = {
     },
     deleteModal: {
       title: "Eliminar Sesión",
-      mainCantDelete: "La sesión principal de TuxChat no se puede eliminar.",
-      subtext: "Sesión adicional de TuxChat",
+      mainCantDelete: "La sesión principal de Zappr no se puede eliminar.",
+      subtext: "Sesión adicional de Zappr",
       warning:
         "El inicio de sesión y todos los datos locales de esta sesión se borrarán permanentemente de este equipo.",
       cancel: "Cancelar",
@@ -122,7 +122,7 @@ window.TUXCHAT_STRINGS = {
       deleting: "Eliminando...",
     },
     aboutModal: {
-      title: "Acerca de TuxChat",
+      title: "Acerca de Zappr",
       desc: "Cliente de escritorio para WhatsApp Web con soporte para múltiples sesiones aisladas.",
       platform: "Plataforma",
       repository: "Repositorio del proyecto",
@@ -132,7 +132,7 @@ window.TUXCHAT_STRINGS = {
   en: {
     addDialog: {
       windowTitle: "Add session",
-      heading: "New isolated TuxChat session",
+      heading: "New isolated Zappr session",
       count: (count, max) => `Configured sessions: ${count}/${max}`,
       namePlaceholder: "E.g.: Personal, Work, Family",
       success: "Done! Opening the session...",
@@ -199,7 +199,8 @@ window.TUXCHAT_STRINGS = {
       hiddenSessions: (n) => `Hidden sessions (${n})`,
       timeNever: "Never used for links",
       timeJustNow: "Used just now",
-      timeSeconds: (s) => (s === 1 ? "Used 1 second ago" : `Used ${s} seconds ago`),
+      timeSeconds: (s) =>
+        s === 1 ? "Used 1 second ago" : `Used ${s} seconds ago`,
       timeMinute: "Used 1 minute ago",
       timeMinutes: (m) => `Used ${m} minutes ago`,
       timeHour: "Used 1 hour ago",
@@ -208,8 +209,8 @@ window.TUXCHAT_STRINGS = {
       timeDays: (d) => `Used ${d} days ago`,
     },
     changelogDialog: {
-      windowTitle: "What's new in TuxChat",
-      heading: (version) => `TuxChat updated to ${version}`,
+      windowTitle: "What's new in Zappr",
+      heading: (version) => `Zappr updated to ${version}`,
       subheading: "Here's what changed:",
       noNotes: "No release notes for this version.",
       close: "Close",
@@ -234,8 +235,8 @@ window.TUXCHAT_STRINGS = {
     },
     deleteModal: {
       title: "Delete Session",
-      mainCantDelete: "The main TuxChat session cannot be deleted.",
-      subtext: "Additional TuxChat session",
+      mainCantDelete: "The main Zappr session cannot be deleted.",
+      subtext: "Additional Zappr session",
       warning:
         "The login and all local data for this session will be permanently deleted from this machine.",
       cancel: "Cancel",
@@ -243,7 +244,7 @@ window.TUXCHAT_STRINGS = {
       deleting: "Deleting...",
     },
     aboutModal: {
-      title: "About TuxChat",
+      title: "About Zappr",
       desc: "Desktop client for WhatsApp Web with support for multiple isolated sessions.",
       platform: "Platform",
       repository: "Project repository",
@@ -253,7 +254,7 @@ window.TUXCHAT_STRINGS = {
   pt: {
     addDialog: {
       windowTitle: "Adicionar sessão",
-      heading: "Nova sessão isolada do TuxChat",
+      heading: "Nova sessão isolada do Zappr",
       count: (count, max) => `Sessões configuradas: ${count}/${max}`,
       namePlaceholder: "Ex: Trabalho, Pessoal, Vendas",
       success: "Pronto! Abrindo a sessão...",
@@ -295,7 +296,7 @@ window.TUXCHAT_STRINGS = {
         'Defina qual sessão deve abrir links do tipo "whatsapp://" recebidos de outros aplicativos.',
       savedSession: (name) => `Sessão padrão atual: ${name}`,
       noSavedSession:
-        "Nenhuma sessão padrão salva. O TuxChat perguntará ao receber um link.",
+        "Nenhuma sessão padrão salva. O Zappr perguntará ao receber um link.",
       forget: "Limpar padrão",
       save: "Salvar",
       close: "Cancelar",
@@ -308,7 +309,7 @@ window.TUXCHAT_STRINGS = {
       autoSend: "Enviar automaticamente",
       autoRouteOldest: "Alternar sessões automaticamente",
       autoRouteOldestHelp:
-        "Ao receber um link pelo protocolo, o TuxChat enviará a mensagem automaticamente para a sessão que foi usada há mais tempo, alternando entre as contas visíveis. Sessões ocultas não entram nesse sorteio.",
+        "Ao receber um link pelo protocolo, o Zappr enviará a mensagem automaticamente para a sessão que foi usada há mais tempo, alternando entre as contas visíveis. Sessões ocultas não entram nesse sorteio.",
       sessionsHeading: "Enviar com a sessão:",
       remember: "Lembrar desta escolha para os próximos links",
       open: "Abrir",
@@ -330,8 +331,8 @@ window.TUXCHAT_STRINGS = {
       timeDays: (d) => `Usada há ${d} dias atrás`,
     },
     changelogDialog: {
-      windowTitle: "Novidades do TuxChat",
-      heading: (version) => `TuxChat foi atualizado para ${version}`,
+      windowTitle: "Novidades do Zappr",
+      heading: (version) => `Zappr foi atualizado para ${version}`,
       subheading: "Confira as mudanças:",
       noNotes: "Sem notas de versão.",
       close: "Fechar",
@@ -356,8 +357,8 @@ window.TUXCHAT_STRINGS = {
     },
     deleteModal: {
       title: "Excluir Sessão",
-      mainCantDelete: "A sessão principal do TuxChat não pode ser excluída.",
-      subtext: "Sessão adicional do TuxChat",
+      mainCantDelete: "A sessão principal do Zappr não pode ser excluída.",
+      subtext: "Sessão adicional do Zappr",
       warning:
         "O login e todos os dados locais desta sessão serão apagados permanentemente desta máquina.",
       cancel: "Cancelar",
@@ -365,7 +366,7 @@ window.TUXCHAT_STRINGS = {
       deleting: "Excluindo...",
     },
     aboutModal: {
-      title: "Sobre o TuxChat",
+      title: "Sobre o Zappr",
       desc: "Cliente desktop para WhatsApp Web com suporte a múltiplas sessões isoladas.",
       platform: "Plataforma",
       repository: "Repositório do projeto",

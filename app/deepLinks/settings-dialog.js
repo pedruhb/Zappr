@@ -3,12 +3,12 @@
 const localeParam =
   new URLSearchParams(window.location.search).get("locale") || "";
 const LOCALE = ["pt", "es", "en"].includes(localeParam) ? localeParam : "en";
-const L = (window.TUXCHAT_STRINGS &&
-  window.TUXCHAT_STRINGS[LOCALE] &&
-  window.TUXCHAT_STRINGS[LOCALE].linksSettingsDialog) ||
-  (window.TUXCHAT_STRINGS &&
-    window.TUXCHAT_STRINGS.en &&
-    window.TUXCHAT_STRINGS.en.linksSettingsDialog) || {
+const L = (window.ZAPPR_STRINGS &&
+  window.ZAPPR_STRINGS[LOCALE] &&
+  window.ZAPPR_STRINGS[LOCALE].linksSettingsDialog) ||
+  (window.ZAPPR_STRINGS &&
+    window.ZAPPR_STRINGS.en &&
+    window.ZAPPR_STRINGS.en.linksSettingsDialog) || {
     windowTitle: "WhatsApp links",
     heading: "WhatsApp links",
     description: "Choose which session opens whatsapp:// links.",
@@ -38,18 +38,21 @@ const autoRouteHelpBtn = document.getElementById("auto-route-help-btn");
 const autoRouteHelpWrapper = document.getElementById("auto-route-help-wrapper");
 
 const pickerL =
-  (window.TUXCHAT_STRINGS &&
-    window.TUXCHAT_STRINGS[LOCALE] &&
-    window.TUXCHAT_STRINGS[LOCALE].linkPicker) ||
+  (window.ZAPPR_STRINGS &&
+    window.ZAPPR_STRINGS[LOCALE] &&
+    window.ZAPPR_STRINGS[LOCALE].linkPicker) ||
   {};
 if (autoRouteLabelEl) {
   autoRouteLabelEl.textContent =
-    L.autoRouteOldest || pickerL.autoRouteOldest || "Alternar sessões automaticamente";
+    L.autoRouteOldest ||
+    pickerL.autoRouteOldest ||
+    "Alternar sessões automaticamente";
 }
 if (autoRouteHelpTextEl) {
   autoRouteHelpTextEl.textContent =
-    L.autoRouteOldestHelp || pickerL.autoRouteOldestHelp ||
-    "Ao receber um link pelo protocolo, o TuxChat enviará a mensagem automaticamente para a sessão que foi usada há mais tempo, alternando entre as contas visíveis. Sessões ocultas não entram nesse sorteio.";
+    L.autoRouteOldestHelp ||
+    pickerL.autoRouteOldestHelp ||
+    "Ao receber um link pelo protocolo, o Zappr enviará a mensagem automaticamente para a sessão que foi usada há mais tempo, alternando entre as contas visíveis. Sessões ocultas não entram nesse sorteio.";
 }
 
 if (autoRouteHelpBtn && autoRouteHelpWrapper) {
@@ -66,10 +69,16 @@ if (autoRouteHelpBtn && autoRouteHelpWrapper) {
   });
 }
 
-if (autoRouteSwitchEl && window.deepLinksDialog && window.deepLinksDialog.setAutoRouteOldest) {
+if (
+  autoRouteSwitchEl &&
+  window.deepLinksDialog &&
+  window.deepLinksDialog.setAutoRouteOldest
+) {
   autoRouteSwitchEl.addEventListener("change", async () => {
     try {
-      await window.deepLinksDialog.setAutoRouteOldest(autoRouteSwitchEl.checked);
+      await window.deepLinksDialog.setAutoRouteOldest(
+        autoRouteSwitchEl.checked,
+      );
     } catch {
       // Ignore error
     }
@@ -147,9 +156,9 @@ function render() {
       "background:transparent;border:none;color:#8696a0;cursor:pointer;padding:4px;display:flex;align-items:center;margin-left:auto;border-radius:4px;";
     const isHidden = Boolean(item.hideInLinkPicker);
     const pickerL =
-      (window.TUXCHAT_STRINGS &&
-        window.TUXCHAT_STRINGS[LOCALE] &&
-        window.TUXCHAT_STRINGS[LOCALE].linkPicker) ||
+      (window.ZAPPR_STRINGS &&
+        window.ZAPPR_STRINGS[LOCALE] &&
+        window.ZAPPR_STRINGS[LOCALE].linkPicker) ||
       {};
     hideBtn.title = isHidden
       ? pickerL.unhideTooltip || "Voltar a exibir sessão"
@@ -194,7 +203,11 @@ async function load() {
     saveBtn.disabled = true;
     forgetBtn.disabled = !saved;
 
-    if (autoRouteSwitchEl && window.deepLinksDialog && window.deepLinksDialog.getAutoRouteOldest) {
+    if (
+      autoRouteSwitchEl &&
+      window.deepLinksDialog &&
+      window.deepLinksDialog.getAutoRouteOldest
+    ) {
       const isAutoRoute = await window.deepLinksDialog.getAutoRouteOldest();
       autoRouteSwitchEl.checked = Boolean(isAutoRoute);
     }

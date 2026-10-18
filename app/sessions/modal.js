@@ -5,12 +5,12 @@ const mode = params.get("mode") || "create";
 const desktopId = params.get("desktopId") || "";
 const localeParam = params.get("locale") || "";
 const LOCALE = ["pt", "es", "en"].includes(localeParam) ? localeParam : "en";
-const L = (window.TUXCHAT_STRINGS &&
-  window.TUXCHAT_STRINGS[LOCALE] &&
-  window.TUXCHAT_STRINGS[LOCALE].sessionModal) ||
-  (window.TUXCHAT_STRINGS &&
-    window.TUXCHAT_STRINGS.en &&
-    window.TUXCHAT_STRINGS.en.sessionModal) || {
+const L = (window.ZAPPR_STRINGS &&
+  window.ZAPPR_STRINGS[LOCALE] &&
+  window.ZAPPR_STRINGS[LOCALE].sessionModal) ||
+  (window.ZAPPR_STRINGS &&
+    window.ZAPPR_STRINGS.en &&
+    window.ZAPPR_STRINGS.en.sessionModal) || {
     createTitle: "New Session",
     createSubtitle: "Create a new isolated tab for another WhatsApp account.",
     editTitle: "Edit Session",
@@ -139,9 +139,9 @@ async function init() {
   if (mode === "edit") {
     modalTitleEl.textContent = L.editTitle;
     modalSubtitleEl.textContent =
-      desktopId === "tuxchat" ? L.editSubtitleMain : L.editSubtitleOther;
+      desktopId === "zappr" ? L.editSubtitleMain : L.editSubtitleOther;
     modalSubmitBtn.textContent = L.saveBtn;
-    const canDelete = Boolean(desktopId && desktopId !== "tuxchat");
+    const canDelete = Boolean(desktopId && desktopId !== "zappr");
     modalDeleteBtn.hidden = !canDelete;
     modalDeleteBtn.style.display = canDelete ? "inline-flex" : "none";
 
@@ -178,7 +178,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 modalDeleteBtn.addEventListener("click", () => {
-  if (desktopId && desktopId !== "tuxchat") {
+  if (desktopId && desktopId !== "zappr") {
     window.modalAPI.openDelete(desktopId);
   }
 });

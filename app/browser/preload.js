@@ -22,19 +22,19 @@ function injectMainWorldScripts() {
         };
       }
 
-      // TuxChat Audio Controller (intercepts HTMLMediaElement and AudioContext)
-      if (window.__tuxchatAudioHooked) return;
-      window.__tuxchatAudioHooked = true;
+      // Zappr Audio Controller (intercepts HTMLMediaElement and AudioContext)
+      if (window.__zapprAudioHooked) return;
+      window.__zapprAudioHooked = true;
 
-      window.__tuxchatInstanceVolume = typeof window.__tuxchatInstanceVolume === 'number' ? window.__tuxchatInstanceVolume : 1;
-      window.__tuxchatInstanceMuted = Boolean(window.__tuxchatInstanceMuted);
-      window.__tuxchatActiveAudioElements = window.__tuxchatActiveAudioElements || new Set();
-      window.__tuxchatAudioContexts = window.__tuxchatAudioContexts || new Set();
+      window.__zapprInstanceVolume = typeof window.__zapprInstanceVolume === 'number' ? window.__zapprInstanceVolume : 1;
+      window.__zapprInstanceMuted = Boolean(window.__zapprInstanceMuted);
+      window.__zapprActiveAudioElements = window.__zapprActiveAudioElements || new Set();
+      window.__zapprAudioContexts = window.__zapprAudioContexts || new Set();
 
       function getEffectiveFactor() {
-        if (window.__tuxchatInstanceMuted) return 0;
-        if (typeof window.__tuxchatInstanceVolume === 'number') {
-          return Math.max(0, Math.min(1, window.__tuxchatInstanceVolume));
+        if (window.__zapprInstanceMuted) return 0;
+        if (typeof window.__zapprInstanceVolume === 'number') {
+          return Math.max(0, Math.min(1, window.__zapprInstanceVolume));
         }
         return 1;
       }
@@ -48,7 +48,7 @@ function injectMainWorldScripts() {
       const origMutedGet = mutedDesc.get;
       const origMutedSet = mutedDesc.set;
 
-      window.__tuxchatOrigMedia = {
+      window.__zapprOrigMedia = {
         origVolGet,
         origVolSet,
         origMutedGet,
@@ -59,15 +59,15 @@ function injectMainWorldScripts() {
         configurable: true,
         enumerable: true,
         get() {
-          if (this.__tuxchatVirtualVolume !== undefined) {
-            return this.__tuxchatVirtualVolume;
+          if (this.__zapprVirtualVolume !== undefined) {
+            return this.__zapprVirtualVolume;
           }
           return origVolGet ? origVolGet.call(this) : 1;
         },
         set(val) {
           const num = Math.max(0, Math.min(1, Number(val) || 0));
-          this.__tuxchatVirtualVolume = num;
-          window.__tuxchatActiveAudioElements.add(this);
+          this.__zapprVirtualVolume = num;
+          window.__zapprActiveAudioElements.add(this);
           const real = num * getEffectiveFactor();
           if (origVolSet) origVolSet.call(this, real);
         }
@@ -77,29 +77,29 @@ function injectMainWorldScripts() {
         configurable: true,
         enumerable: true,
         get() {
-          if (this.__tuxchatVirtualMuted !== undefined) {
-            return this.__tuxchatVirtualMuted;
+          if (this.__zapprVirtualMuted !== undefined) {
+            return this.__zapprVirtualMuted;
           }
           return origMutedGet ? origMutedGet.call(this) : false;
         },
         set(val) {
           const b = Boolean(val);
-          this.__tuxchatVirtualMuted = b;
-          window.__tuxchatActiveAudioElements.add(this);
-          const real = b || window.__tuxchatInstanceMuted || getEffectiveFactor() === 0;
+          this.__zapprVirtualMuted = b;
+          window.__zapprActiveAudioElements.add(this);
+          const real = b || window.__zapprInstanceMuted || getEffectiveFactor() === 0;
           if (origMutedSet) origMutedSet.call(this, real);
         }
       });
 
       const origPlay = HTMLMediaElement.prototype.play;
       HTMLMediaElement.prototype.play = function(...args) {
-        window.__tuxchatActiveAudioElements.add(this);
-        const v = this.__tuxchatVirtualVolume !== undefined ? this.__tuxchatVirtualVolume : 1;
+        window.__zapprActiveAudioElements.add(this);
+        const v = this.__zapprVirtualVolume !== undefined ? this.__zapprVirtualVolume : 1;
         const real = v * getEffectiveFactor();
         if (origVolSet) {
           try { origVolSet.call(this, real); } catch(_) {}
         }
-        if (origMutedSet && (window.__tuxchatInstanceMuted || getEffectiveFactor() === 0)) {
+        if (origMutedSet && (window.__zapprInstanceMuted || getEffectiveFactor() === 0)) {
           try { origMutedSet.call(this, true); } catch(_) {}
         }
         return origPlay.apply(this, args);
@@ -110,10 +110,10 @@ function injectMainWorldScripts() {
       if (typeof origAudio === 'function') {
         window.Audio = function(...args) {
           const el = new origAudio(...args);
-          window.__tuxchatActiveAudioElements.add(el);
+          window.__zapprActiveAudioElements.add(el);
           const factor = getEffectiveFactor();
           if (origVolSet) {
-            try { origVolSet.call(el, (el.__tuxchatVirtualVolume !== undefined ? el.__tuxchatVirtualVolume : 1) * factor); } catch(_) {}
+            try { origVolSet.call(el, (el.__zapprVirtualVolume !== undefined ? el.__zapprVirtualVolume : 1) * factor); } catch(_) {}
           }
           return el;
         };
@@ -122,18 +122,18 @@ function injectMainWorldScripts() {
 
       // 2. Hook Web Audio API (AudioContext)
       const origConnect = AudioNode.prototype.connect;
-      window.__tuxchatOrigConnect = origConnect;
+      window.__zapprOrigConnect = origConnect;
 
       function hookContext(NativeContext) {
         if (!NativeContext) return NativeContext;
         const Wrapped = function(...args) {
           const ctx = new NativeContext(...args);
-          window.__tuxchatAudioContexts.add(ctx);
+          window.__zapprAudioContexts.add(ctx);
           try {
             const masterGain = ctx.createGain();
             masterGain.gain.value = getEffectiveFactor();
             origConnect.call(masterGain, ctx.destination);
-            ctx.__tuxchatMasterGain = masterGain;
+            ctx.__zapprMasterGain = masterGain;
           } catch (_) {}
           return ctx;
         };
@@ -144,8 +144,8 @@ function injectMainWorldScripts() {
       AudioNode.prototype.connect = function(destination, outputIndex, inputIndex) {
         if (destination && destination instanceof AudioDestinationNode) {
           const ctx = destination.context;
-          if (ctx && ctx.__tuxchatMasterGain && this !== ctx.__tuxchatMasterGain) {
-            return origConnect.call(this, ctx.__tuxchatMasterGain, outputIndex, inputIndex);
+          if (ctx && ctx.__zapprMasterGain && this !== ctx.__zapprMasterGain) {
+            return origConnect.call(this, ctx.__zapprMasterGain, outputIndex, inputIndex);
           }
         }
         return origConnect.apply(this, arguments);
@@ -155,46 +155,46 @@ function injectMainWorldScripts() {
       if (window.webkitAudioContext) window.webkitAudioContext = hookContext(window.webkitAudioContext);
 
       // 3. Global update function
-      window.__tuxchatUpdateVolume = function(volPercent, isMuted) {
-        window.__tuxchatInstanceVolume = Math.max(0, Math.min(1, (Number(volPercent) || 0) / 100));
-        window.__tuxchatInstanceMuted = Boolean(isMuted);
+      window.__zapprUpdateVolume = function(volPercent, isMuted) {
+        window.__zapprInstanceVolume = Math.max(0, Math.min(1, (Number(volPercent) || 0) / 100));
+        window.__zapprInstanceMuted = Boolean(isMuted);
         const factor = getEffectiveFactor();
 
-        const curVolSet = window.__tuxchatOrigMedia?.origVolSet;
-        const curMutedSet = window.__tuxchatOrigMedia?.origMutedSet;
+        const curVolSet = window.__zapprOrigMedia?.origVolSet;
+        const curMutedSet = window.__zapprOrigMedia?.origMutedSet;
 
         document.querySelectorAll('audio, video').forEach((el) => {
-          window.__tuxchatActiveAudioElements.add(el);
+          window.__zapprActiveAudioElements.add(el);
         });
 
-        for (const el of window.__tuxchatActiveAudioElements) {
+        for (const el of window.__zapprActiveAudioElements) {
           try {
-            const v = el.__tuxchatVirtualVolume !== undefined ? el.__tuxchatVirtualVolume : 1;
+            const v = el.__zapprVirtualVolume !== undefined ? el.__zapprVirtualVolume : 1;
             if (curVolSet) {
               curVolSet.call(el, v * factor);
             } else {
               el.volume = v * factor;
             }
             if (curMutedSet) {
-              if (window.__tuxchatInstanceMuted || factor === 0) {
+              if (window.__zapprInstanceMuted || factor === 0) {
                 curMutedSet.call(el, true);
-              } else if (el.__tuxchatVirtualMuted !== undefined) {
-                curMutedSet.call(el, el.__tuxchatVirtualMuted);
+              } else if (el.__zapprVirtualMuted !== undefined) {
+                curMutedSet.call(el, el.__zapprVirtualMuted);
               } else {
                 curMutedSet.call(el, false);
               }
-            } else if (window.__tuxchatInstanceMuted || factor === 0) {
+            } else if (window.__zapprInstanceMuted || factor === 0) {
               el.muted = true;
             }
           } catch (_) {}
         }
 
-        for (const ctx of window.__tuxchatAudioContexts) {
+        for (const ctx of window.__zapprAudioContexts) {
           try {
-            if (ctx && ctx.__tuxchatMasterGain) {
-              ctx.__tuxchatMasterGain.gain.value = factor;
+            if (ctx && ctx.__zapprMasterGain) {
+              ctx.__zapprMasterGain.gain.value = factor;
               try {
-                ctx.__tuxchatMasterGain.gain.setValueAtTime(factor, ctx.currentTime);
+                ctx.__zapprMasterGain.gain.setValueAtTime(factor, ctx.currentTime);
               } catch (_) {}
             }
           } catch (_) {}
@@ -218,11 +218,11 @@ function extractUnreadCount() {
     // 1. WhatsApp Web navbar item for "Conversas" / "Chats"
     const chatBtn = document.querySelector(
       'button[data-navbar-item-index="0"], ' +
-      'button[aria-label="Conversas"], ' +
-      'button[aria-label="Chats"], ' +
-      'button[aria-label="Chats "], ' +
-      'button[aria-label="Conversaciones"], ' +
-      'button[data-navbar-item="true"]',
+        'button[aria-label="Conversas"], ' +
+        'button[aria-label="Chats"], ' +
+        'button[aria-label="Chats "], ' +
+        'button[aria-label="Conversaciones"], ' +
+        'button[data-navbar-item="true"]',
     );
     if (chatBtn && chatBtn.parentElement) {
       const statusSpan = chatBtn.parentElement.querySelector('[role="status"]');

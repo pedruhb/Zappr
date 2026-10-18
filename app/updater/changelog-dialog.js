@@ -1,6 +1,6 @@
 const LOCALE =
   new URLSearchParams(location.search).get("locale") === "es" ? "es" : "en";
-const L = window.TUXCHAT_STRINGS[LOCALE].changelogDialog;
+const L = window.ZAPPR_STRINGS[LOCALE].changelogDialog;
 
 document.documentElement.lang = LOCALE;
 document.title = L.windowTitle;
@@ -78,8 +78,8 @@ function renderNotes(container, notes) {
 }
 
 window.changelogDialog.onNotes(({ version, releaseName, releaseNotes }) => {
-  // The version, not releaseName: release titles already read "TuxChat
-  // vX.Y.Z", which made the heading say "TuxChat updated to TuxChat …".
+  // The version, not releaseName: release titles already read "Zappr
+  // vX.Y.Z", which made the heading say "Zappr updated to Zappr …".
   document.getElementById("heading").textContent = L.heading(
     version ? `v${version}` : releaseName,
   );

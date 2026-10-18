@@ -16,14 +16,17 @@
         --text-primary: #e9edef;
         --text-secondary: #8696a0;
       }
+
       *,
       *::before,
       *::after {
         box-sizing: border-box;
       }
+
       [hidden] {
         display: none !important;
       }
+
       html,
       body {
         margin: 0;
@@ -43,6 +46,7 @@
         user-select: none;
         overflow: hidden;
       }
+
       .modal-card {
         display: flex;
         flex-direction: column;
@@ -51,6 +55,7 @@
         border: 1px solid var(--border);
         box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
       }
+
       .modal-header {
         padding: 16px 20px 14px;
         border-bottom: 1px solid var(--border);
@@ -59,6 +64,7 @@
         align-items: flex-start;
         -webkit-app-region: drag;
       }
+
       .modal-close-btn {
         background: transparent;
         border: none;
@@ -74,15 +80,18 @@
           color 0.15s;
         -webkit-app-region: no-drag;
       }
+
       .modal-close-btn:hover {
         background: rgba(255, 255, 255, 0.08);
         color: var(--text-primary);
       }
+
       .modal-title-group {
         display: flex;
         flex-direction: column;
         gap: 3px;
       }
+
       .modal-title {
         font-size: 16px;
         font-weight: 700;
@@ -92,39 +101,48 @@
         align-items: center;
         gap: 8px;
       }
+
       .modal-title-icon {
         color: var(--whatsapp-green);
         display: flex;
         align-items: center;
       }
+
       .modal-subtitle {
         font-size: 12px;
         color: var(--text-secondary);
         margin: 0;
       }
+
       /* Modern WhatsApp-style custom scrollbar */
       * {
         scrollbar-width: thin;
         scrollbar-color: rgba(134, 150, 160, 0.28) transparent;
       }
+
       ::-webkit-scrollbar {
         width: 6px;
         height: 6px;
       }
+
       ::-webkit-scrollbar-track {
         background: transparent;
       }
+
       ::-webkit-scrollbar-thumb {
         background: rgba(134, 150, 160, 0.28);
         border-radius: 6px;
         transition: background-color 0.2s ease;
       }
+
       ::-webkit-scrollbar-thumb:hover {
         background: rgba(134, 150, 160, 0.48);
       }
+
       ::-webkit-scrollbar-thumb:active {
         background: var(--whatsapp-green);
       }
+
       ::-webkit-scrollbar-corner {
         background: transparent;
       }
@@ -138,6 +156,7 @@
         overflow-y: auto;
         overflow-x: hidden;
       }
+
       .message-section {
         display: flex;
         flex-direction: column;
@@ -147,12 +166,14 @@
         border-radius: 10px;
         padding: 10px 12px;
       }
+
       .message-header-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 8px;
       }
+
       .message-label {
         font-size: 11.5px;
         font-weight: 600;
@@ -161,6 +182,7 @@
         align-items: center;
         gap: 5px;
       }
+
       .auto-send-row {
         display: inline-flex;
         align-items: center;
@@ -171,9 +193,11 @@
         color: var(--whatsapp-green);
         font-weight: 500;
       }
+
       .auto-send-row:hover {
         color: var(--whatsapp-green-hover);
       }
+
       .auto-send-row input[type="checkbox"] {
         accent-color: var(--whatsapp-green);
         width: 14px;
@@ -181,6 +205,7 @@
         cursor: pointer;
         margin: 0;
       }
+
       .message-textarea {
         width: 100%;
         min-height: 52px;
@@ -190,20 +215,31 @@
         border-radius: 8px;
         padding: 8px 10px;
         color: var(--text-primary);
-        font: 12.5px/1.4 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font:
+          12.5px/1.4 system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
         resize: vertical;
         outline: none;
         box-sizing: border-box;
-        transition: border-color 0.15s, box-shadow 0.15s;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
       }
+
       .message-textarea:focus {
         border-color: var(--whatsapp-green);
         box-shadow: 0 0 0 1px var(--whatsapp-green);
       }
+
       .message-textarea::placeholder {
         color: var(--text-secondary);
         opacity: 0.65;
       }
+
       .auto-route-card {
         position: relative;
         z-index: 50;
@@ -215,12 +251,14 @@
         align-items: center;
         justify-content: space-between;
       }
+
       .auto-route-content {
         display: flex;
         align-items: center;
         gap: 10px;
         width: 100%;
       }
+
       .auto-route-label {
         font-size: 12px;
         font-weight: 500;
@@ -229,9 +267,11 @@
         user-select: none;
         flex: 1;
       }
+
       .auto-route-label:hover {
         color: var(--whatsapp-green);
       }
+
       /* iOS / WhatsApp Style Switch */
       .ios-switch {
         position: relative;
@@ -240,12 +280,14 @@
         height: 19px;
         flex-shrink: 0;
       }
+
       .ios-switch input {
         opacity: 0;
         width: 0;
         height: 0;
         margin: 0;
       }
+
       .ios-slider {
         position: absolute;
         cursor: pointer;
@@ -257,6 +299,7 @@
         transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         border-radius: 20px;
       }
+
       .ios-slider::before {
         position: absolute;
         content: "";
@@ -269,22 +312,27 @@
         border-radius: 50%;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
       }
+
       .ios-switch input:checked + .ios-slider {
         background-color: var(--whatsapp-green);
       }
+
       .ios-switch input:checked + .ios-slider::before {
         transform: translateX(15px);
       }
+
       .ios-switch input:focus-visible + .ios-slider {
         outline: 2px solid var(--whatsapp-green);
         outline-offset: 2px;
       }
+
       /* Help popover */
       .help-popover-wrapper {
         position: relative;
         display: inline-flex;
         align-items: center;
       }
+
       .help-circle-btn {
         width: 17px;
         height: 17px;
@@ -302,6 +350,7 @@
         padding: 0;
         transition: all 0.15s ease;
       }
+
       .help-circle-btn:hover,
       .help-circle-btn:focus-visible,
       .help-popover-wrapper.active .help-circle-btn {
@@ -310,6 +359,7 @@
         background: rgba(0, 168, 132, 0.12);
         outline: none;
       }
+
       .help-tooltip-bubble {
         position: absolute;
         top: calc(100% + 10px);
@@ -328,8 +378,12 @@
         opacity: 0;
         visibility: hidden;
         transform: translateY(-4px);
-        transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+        transition:
+          opacity 0.18s ease,
+          transform 0.18s ease,
+          visibility 0.18s;
       }
+
       .help-tooltip-bubble .tooltip-arrow {
         position: absolute;
         top: -6px;
@@ -341,6 +395,7 @@
         border-top: 1px solid var(--border);
         transform: rotate(45deg);
       }
+
       .help-popover-wrapper:hover .help-tooltip-bubble,
       .help-popover-wrapper:focus-within .help-tooltip-bubble,
       .help-popover-wrapper.active .help-tooltip-bubble {
@@ -349,6 +404,7 @@
         transform: translateY(0);
         pointer-events: auto;
       }
+
       .sessions-section-title {
         font-size: 11px;
         font-weight: 600;
@@ -358,11 +414,13 @@
         margin-top: 2px;
         margin-bottom: -2px;
       }
+
       .sessions-list {
         display: flex;
         flex-direction: column;
         gap: 6px;
       }
+
       .session-row {
         display: flex;
         align-items: center;
@@ -377,18 +435,22 @@
           border-color 0.15s,
           transform 0.1s;
       }
+
       .session-row:hover {
         background: #2a3942;
         border-color: var(--whatsapp-green);
         transform: translateY(-1px);
       }
+
       .session-row:active {
         transform: translateY(0);
       }
+
       .session-row:focus-visible {
         outline: 2px solid var(--whatsapp-green);
         outline-offset: 1px;
       }
+
       .session-main-btn {
         display: flex;
         align-items: center;
@@ -397,6 +459,7 @@
         min-width: 0;
         pointer-events: none;
       }
+
       .session-avatar {
         width: 34px;
         height: 34px;
@@ -412,17 +475,20 @@
         font-weight: 700;
         color: var(--whatsapp-green);
       }
+
       .session-avatar img {
         width: 100%;
         height: 100%;
         object-fit: cover;
       }
+
       .session-info {
         display: flex;
         flex-direction: column;
         gap: 2px;
         min-width: 0;
       }
+
       .session-name {
         font-size: 13px;
         font-weight: 600;
@@ -431,6 +497,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
       }
+
       .session-time-desc {
         font-size: 11px;
         color: var(--text-secondary);
@@ -438,11 +505,13 @@
         overflow: hidden;
         text-overflow: ellipsis;
       }
+
       .session-row-right {
         display: flex;
         align-items: center;
         gap: 6px;
       }
+
       .session-arrow {
         color: var(--text-secondary);
         opacity: 0;
@@ -455,17 +524,21 @@
         align-items: center;
         pointer-events: none;
       }
+
       .session-row:hover .session-arrow {
         opacity: 1;
         transform: translateX(0);
         color: var(--whatsapp-green);
       }
+
       .session-row.is-hidden {
         opacity: 0.75;
       }
+
       .session-row.is-hidden .session-name {
         color: var(--text-secondary);
       }
+
       .hide-toggle-btn {
         background: transparent;
         border: none;
@@ -482,10 +555,12 @@
           background-color 0.15s,
           color 0.15s;
       }
+
       .hide-toggle-btn:hover {
         background: #202c33;
         color: var(--whatsapp-green);
       }
+
       .session-row.is-hidden .hide-toggle-btn:hover {
         color: var(--whatsapp-green);
       }
@@ -497,6 +572,7 @@
         flex-direction: column;
         gap: 6px;
       }
+
       .toggle-hidden-btn {
         background: transparent;
         border: none;
@@ -511,16 +587,20 @@
         transition: color 0.15s;
         align-self: flex-start;
       }
+
       .toggle-hidden-btn:hover {
         color: var(--text-primary);
       }
+
       .toggle-arrow {
         font-size: 10px;
         transition: transform 0.2s;
       }
+
       .toggle-hidden-btn.open .toggle-arrow {
         transform: rotate(180deg);
       }
+
       .hidden-list {
         display: flex;
         flex-direction: column;
@@ -536,9 +616,11 @@
         cursor: pointer;
         user-select: none;
       }
+
       .remember-row:hover {
         color: var(--text-primary);
       }
+
       .remember-row input[type="checkbox"] {
         width: 15px;
         height: 15px;
@@ -546,6 +628,7 @@
         cursor: pointer;
         margin: 0;
       }
+
       .modal-footer {
         padding: 12px 20px;
         background: #182229;
@@ -555,6 +638,7 @@
         justify-content: space-between;
         gap: 12px;
       }
+
       .btn-secondary {
         background: transparent;
         color: var(--text-secondary);
@@ -569,11 +653,13 @@
           color 0.15s,
           border-color 0.15s;
       }
+
       .btn-secondary:hover {
         background: #202c33;
         color: var(--text-primary);
         border-color: #3b4a54;
       }
+
       .btn-primary {
         background: var(--whatsapp-green);
         color: #111b21;
@@ -588,10 +674,12 @@
           background-color 0.15s,
           transform 0.1s;
       }
+
       .btn-primary:hover:not(:disabled) {
         background: var(--whatsapp-green-hover);
         transform: translateY(-1px);
       }
+
       .btn-primary:disabled {
         opacity: 0.45;
         cursor: default;
@@ -599,6 +687,7 @@
       }
     </style>
   </head>
+
   <body>
     <div class="modal-card">
       <div class="modal-header">
@@ -652,8 +741,19 @@
         <div class="message-section">
           <div class="message-header-row">
             <label for="message-input" id="message-label" class="message-label">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                ></path>
               </svg>
               <span>Mensagem:</span>
             </label>
@@ -677,7 +777,11 @@
               <input id="auto-route-switch" type="checkbox" />
               <span class="ios-slider"></span>
             </label>
-            <label for="auto-route-switch" id="auto-route-label" class="auto-route-label">
+            <label
+              for="auto-route-switch"
+              id="auto-route-label"
+              class="auto-route-label"
+            >
               Alternar sessões automaticamente
             </label>
             <div class="help-popover-wrapper" id="auto-route-help-wrapper">
@@ -687,10 +791,21 @@
                 class="help-circle-btn"
                 aria-label="Como funciona o envio automático"
                 tabindex="0"
-              >?</button>
-              <div class="help-tooltip-bubble" id="auto-route-tooltip" role="tooltip">
+              >
+                ?
+              </button>
+              <div
+                class="help-tooltip-bubble"
+                id="auto-route-tooltip"
+                role="tooltip"
+              >
                 <div class="tooltip-arrow"></div>
-                <span id="auto-route-help-text">Ao receber um link pelo protocolo, o TuxChat enviará a mensagem automaticamente para a sessão que foi usada há mais tempo, alternando entre as contas visíveis. Sessões ocultas não entram nesse sorteio.</span>
+                <span id="auto-route-help-text"
+                  >Ao receber um link pelo protocolo, o Zappr enviará a mensagem
+                  automaticamente para a sessão que foi usada há mais tempo,
+                  alternando entre as contas visíveis. Sessões ocultas não
+                  entram nesse sorteio.</span
+                >
               </div>
             </div>
           </div>

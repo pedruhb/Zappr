@@ -38,11 +38,28 @@ const ICONS_DIR = path.join(
   "apps",
 );
 const MAIN_ICON = path.join(__dirname, "..", "..", "build", "icon.png");
-const TINTED_ICONS_DIR = path.join(HOME, ".local", "share", "tuxchat", "icons");
-const SESSIONS_CONFIG_DIR = path.join(HOME, ".config", "tuxchat");
+const TINTED_ICONS_DIR = path.join(HOME, ".local", "share", "zappr", "icons");
+const SESSIONS_CONFIG_DIR = path.join(HOME, ".config", "zappr");
 const SESSIONS_JSON_PATH = path.join(SESSIONS_CONFIG_DIR, "sessions.json");
+const OLD_SESSIONS_JSON_PATH = path.join(
+  HOME,
+  ".config",
+  "zappr",
+  "sessions.json",
+);
 
 function getStoredSessions() {
+  if (
+    !fs.existsSync(SESSIONS_JSON_PATH) &&
+    fs.existsSync(OLD_SESSIONS_JSON_PATH)
+  ) {
+    try {
+      fs.mkdirSync(SESSIONS_CONFIG_DIR, { recursive: true });
+      fs.copyFileSync(OLD_SESSIONS_JSON_PATH, SESSIONS_JSON_PATH);
+    } catch {
+      // Ignore migration error
+    }
+  }
   if (!fs.existsSync(SESSIONS_JSON_PATH)) return [];
   try {
     const data = JSON.parse(fs.readFileSync(SESSIONS_JSON_PATH, "utf8"));
@@ -75,7 +92,7 @@ function notifySessionsChanged() {
   }
 }
 
-const DESKTOP_RE = /^tuxchat(?:-(.+))?\.desktop$/;
+const DESKTOP_RE = /^(?:zappr|zappr)(?:-(.+))?\.desktop$/;
 
 function slugify(name) {
   return name
@@ -106,7 +123,7 @@ function validateProfileName(profileName) {
 function listSessionSlugs() {
   const stored = getStoredSessions();
   const slugs = stored
-    .filter((s) => s.desktopId !== "tuxchat")
+    .filter((s) => s.desktopId !== "zappr" && s.desktopId !== "zappr")
     .map((s) => s.slug || slugify(s.profileName));
   if (process.platform === "linux" && fs.existsSync(APPLICATIONS_DIR)) {
     const linuxSlugs = fs
@@ -127,9 +144,9 @@ function sessionStatus() {
 function listDeletableSessions() {
   const stored = getStoredSessions();
   const deletable = stored
-    .filter((s) => s.desktopId !== "tuxchat")
+    .filter((s) => s.desktopId !== "zappr" && s.desktopId !== "zappr")
     .map((s) => ({
-      desktopId: s.desktopId || `tuxchat-${s.slug}`,
+      desktopId: s.desktopId || `zappr-${s.slug}`,
       slug: s.slug || slugify(s.profileName),
       profileName: s.profileName,
       avatar: s.avatar || null,
@@ -147,7 +164,7 @@ function listDeletableSessions() {
       .filter((match) => match && match[1])
       .forEach((match) => {
         const slug = match[1];
-        const desktopId = `tuxchat-${slug}`;
+        const desktopId = `zappr-${slug}`;
         if (!existingIds.has(desktopId)) {
           const desktopPath = path.join(
             APPLICATIONS_DIR,
@@ -156,7 +173,7 @@ function listDeletableSessions() {
           let profileName = slug;
           try {
             const content = fs.readFileSync(desktopPath, "utf8");
-            const m = /^Name=TuxChat - (.+)$/m.exec(content);
+            const m = /^Name=Zappr - (.+)$/m.exec(content);
             if (m) profileName = m[1];
           } catch {
             // Ignore unreadable desktop entry
@@ -180,20 +197,24 @@ function listDeletableSessions() {
 
 function listAllSessions() {
   const stored = getStoredSessions();
-  const mainCustom = stored.find((s) => s.desktopId === "tuxchat");
+  const mainCustom = stored.find(
+    (s) => s.desktopId === "zappr" || s.desktopId === "zappr",
+  );
   let mainProfileName = mainCustom
     ? mainCustom.profileName
     : t("sessions.mainLabel");
   if (
-    mainProfileName === "TuxChat (principal)" ||
-    mainProfileName === "TuxChat (main)" ||
+    mainProfileName === "Zappr (principal)" ||
+    mainProfileName === "Zappr (main)" ||
+    mainProfileName === "Zappr (principal)" ||
+    mainProfileName === "Zappr (main)" ||
     mainProfileName === "Principal" ||
     mainProfileName === "Main"
   ) {
     mainProfileName = t("sessions.mainLabel");
   }
   const mainSession = {
-    desktopId: "tuxchat",
+    desktopId: "zappr",
     profileName: mainProfileName,
     avatar: mainCustom ? mainCustom.avatar : null,
     color: mainCustom ? mainCustom.color || null : null,
@@ -208,7 +229,8 @@ function listAllSessions() {
 
   const deletable = listDeletableSessions();
   const allMap = new Map();
-  allMap.set("tuxchat", mainSession);
+  allMap.set("zappr", mainSession);
+  allMap.set("zappr", mainSession);
   for (const s of deletable) {
     allMap.set(s.desktopId, s);
   }
@@ -217,16 +239,16 @@ function listAllSessions() {
   const addedIds = new Set();
 
   for (const s of stored) {
-    const id = s.desktopId || (s.slug ? `tuxchat-${s.slug}` : "tuxchat");
+    const id = s.desktopId || (s.slug ? `zappr-${s.slug}` : "zappr");
     if (allMap.has(id) && !addedIds.has(id)) {
       result.push(allMap.get(id));
       addedIds.add(id);
     }
   }
 
-  if (!addedIds.has("tuxchat")) {
+  if (!addedIds.has("zappr") && !addedIds.has("zappr")) {
     result.unshift(mainSession);
-    addedIds.add("tuxchat");
+    addedIds.add("zappr");
   }
 
   for (const [id, session] of allMap.entries()) {
@@ -247,7 +269,7 @@ function buildLauncherScript({ profileName, userDataDir, desktopId }) {
   parts.push(`--profile-name=${shQuote(profileName)}`);
 
   return `#!/bin/bash
-# Sesión "${profileName}" de TuxChat
+# Sesión "${profileName}" de Zappr
 exec ${parts.join(" \\\n  ")}
 `;
 }
@@ -258,7 +280,7 @@ function buildDesktopEntry({ profileName, launcherPath, desktopId, icon }) {
     "Version=1.0",
     "Terminal=false",
     "Type=Application",
-    `Name=TuxChat - ${profileName}`,
+    `Name=Zappr - ${profileName}`,
     `Comment=${t("sessions.desktopComment", profileName)}`,
     `Exec=${launcherPath}`,
   ];
@@ -280,11 +302,11 @@ function removeTintedIcons(desktopId) {
 
 function refreshDesktopCaches() {
   if (process.platform !== "linux") return;
-  execFile("update-desktop-database", [APPLICATIONS_DIR], () => {});
+  execFile("update-desktop-database", [APPLICATIONS_DIR], () => { });
   execFile(
     "gtk-update-icon-cache",
     ["-f", "-t", path.join(HOME, ".local", "share", "icons", "hicolor")],
-    () => {},
+    () => { },
   );
 }
 
@@ -321,7 +343,7 @@ function createSession(rawInput, rawAvatar) {
     };
   }
 
-  const desktopId = `tuxchat-${slug}`;
+  const desktopId = `zappr-${slug}`;
   const list = getStoredSessions();
   list.push({ desktopId, slug, profileName, avatar });
   saveStoredSessions(list);
@@ -386,12 +408,13 @@ function updateSession(payload) {
   let item = list.find(
     (s) =>
       s.desktopId === desktopId ||
-      (s.slug && `tuxchat-${s.slug}` === desktopId),
+      (s.slug &&
+        (`zappr-${s.slug}` === desktopId || `zappr-${s.slug}` === desktopId)),
   );
 
-  if (!item && desktopId === "tuxchat") {
+  if (!item && (desktopId === "zappr" || desktopId === "zappr")) {
     item = {
-      desktopId: "tuxchat",
+      desktopId: "zappr",
       slug: "",
       profileName: rawName || t("sessions.mainLabel"),
       avatar: null,
@@ -411,9 +434,9 @@ function updateSession(payload) {
 
   if (getActiveSessionId() === desktopId) {
     let name = item.profileName || "";
-    const m = /^TuxChat\s*\((.+)\)$/i.exec(name);
+    const m = /^(?:Zappr|Zappr)\s*\((.+)\)$/i.exec(name);
     if (m) name = m[1].charAt(0).toUpperCase() + m[1].slice(1);
-    const appName = name ? `TuxChat - ${name}` : "TuxChat";
+    const appName = name ? `Zappr - ${name}` : "Zappr";
     titlebar.setTitle(appName);
     if (selfContext && selfContext.mainWindow) {
       updateTrayName(selfContext.tray, selfContext.mainWindow, appName);
@@ -430,13 +453,16 @@ function updateSession(payload) {
 }
 
 function deleteSession(desktopId) {
-  if (!desktopId || desktopId === "tuxchat") {
+  if (!desktopId || desktopId === "zappr" || desktopId === "zappr") {
     return { ok: false, error: "A sessão principal não pode ser excluída." };
   }
 
   let list = getStoredSessions();
   list = list.filter(
-    (s) => s.desktopId !== desktopId && `tuxchat-${s.slug}` !== desktopId,
+    (s) =>
+      s.desktopId !== desktopId &&
+      `zappr-${s.slug}` !== desktopId &&
+      `zappr-${s.slug}` !== desktopId,
   );
   saveStoredSessions(list);
 
@@ -484,11 +510,11 @@ function reorderSessions(orderedIds) {
   const stored = getStoredSessions();
 
   if (
-    orderedIds.includes("tuxchat") &&
-    !stored.some((s) => s.desktopId === "tuxchat")
+    orderedIds.includes("zappr") &&
+    !stored.some((s) => s.desktopId === "zappr")
   ) {
     stored.push({
-      desktopId: "tuxchat",
+      desktopId: "zappr",
       slug: "",
       profileName: t("sessions.mainLabel"),
       avatar: null,
@@ -500,7 +526,7 @@ function reorderSessions(orderedIds) {
   for (const id of orderedIds) {
     if (
       !stored.some(
-        (s) => s.desktopId === id || (s.slug && `tuxchat-${s.slug}` === id),
+        (s) => s.desktopId === id || (s.slug && `zappr-${s.slug}` === id),
       )
     ) {
       const match = deletable.find((d) => d.desktopId === id);
@@ -511,8 +537,8 @@ function reorderSessions(orderedIds) {
   }
 
   stored.sort((a, b) => {
-    const idA = a.desktopId || (a.slug ? `tuxchat-${a.slug}` : "tuxchat");
-    const idB = b.desktopId || (b.slug ? `tuxchat-${b.slug}` : "tuxchat");
+    const idA = a.desktopId || (a.slug ? `zappr-${a.slug}` : "zappr");
+    const idB = b.desktopId || (b.slug ? `zappr-${b.slug}` : "zappr");
     const indexA = orderedIds.indexOf(idA);
     const indexB = orderedIds.indexOf(idB);
     if (indexA === -1 && indexB === -1) return 0;
@@ -530,7 +556,7 @@ let selfContext = null;
 
 function registerSelfContext(mainWindow, tray, profileName, wmClass) {
   const desktopId =
-    wmClass || (profileName ? `tuxchat-${slugify(profileName)}` : "tuxchat");
+    wmClass || (profileName ? `zappr-${slugify(profileName)}` : "zappr");
   selfContext = { mainWindow, tray, profileName, desktopId };
 }
 
@@ -539,23 +565,23 @@ function canRenameSelf() {
 }
 
 function getSessionColor(desktopId) {
-  const targetId = desktopId || getActiveSessionId() || "tuxchat";
+  const targetId = desktopId || getActiveSessionId() || "zappr";
   const all = listAllSessions();
   const s = all.find((item) => item.desktopId === targetId);
   return s && s.color ? s.color : null;
 }
 
 function setSessionColor(desktopId, color) {
-  const targetId = desktopId || getActiveSessionId() || "tuxchat";
+  const targetId = desktopId || getActiveSessionId() || "zappr";
   const list = getStoredSessions();
   let item = list.find(
     (s) =>
-      s.desktopId === targetId || (s.slug && `tuxchat-${s.slug}` === targetId),
+      s.desktopId === targetId || (s.slug && `zappr-${s.slug}` === targetId),
   );
 
-  if (!item && targetId === "tuxchat") {
+  if (!item && targetId === "zappr") {
     item = {
-      desktopId: "tuxchat",
+      desktopId: "zappr",
       slug: "",
       profileName: t("sessions.mainLabel"),
       avatar: null,
@@ -577,7 +603,7 @@ function setSessionColor(desktopId, color) {
 }
 
 function getSessionMuted(desktopId) {
-  const targetId = desktopId || getActiveSessionId() || "tuxchat";
+  const targetId = desktopId || getActiveSessionId() || "zappr";
   const all = listAllSessions();
   const s = all.find((item) => item.desktopId === targetId);
   return s ? Boolean(s.muted) : false;
@@ -587,8 +613,8 @@ function findOrCreateStoredSession(list, targetId) {
   let item = list.find(
     (s) =>
       s.desktopId === targetId ||
-      (s.slug && `tuxchat-${s.slug}` === targetId) ||
-      (s.profileName && `tuxchat-${slugify(s.profileName)}` === targetId),
+      (s.slug && `zappr-${s.slug}` === targetId) ||
+      (s.profileName && `zappr-${slugify(s.profileName)}` === targetId),
   );
 
   if (!item) {
@@ -596,10 +622,10 @@ function findOrCreateStoredSession(list, targetId) {
     const existing = all.find((s) => s.desktopId === targetId);
     item = {
       desktopId: targetId,
-      slug: (existing && existing.slug) || targetId.replace(/^tuxchat-/, ""),
+      slug: (existing && existing.slug) || targetId.replace(/^zappr-/, ""),
       profileName:
         (existing && existing.profileName) ||
-        (targetId === "tuxchat" ? t("sessions.mainLabel") : targetId),
+        (targetId === "zappr" ? t("sessions.mainLabel") : targetId),
       avatar: (existing && existing.avatar) || null,
       color: (existing && existing.color) || null,
       muted: false,
@@ -612,7 +638,7 @@ function findOrCreateStoredSession(list, targetId) {
 }
 
 function setSessionMuted(desktopId, muted) {
-  const targetId = desktopId || getActiveSessionId() || "tuxchat";
+  const targetId = desktopId || getActiveSessionId() || "zappr";
   const list = getStoredSessions();
   const item = findOrCreateStoredSession(list, targetId);
   item.muted = Boolean(muted);
@@ -632,14 +658,14 @@ function setSessionMuted(desktopId, muted) {
 }
 
 function getSessionVolume(desktopId) {
-  const targetId = desktopId || getActiveSessionId() || "tuxchat";
+  const targetId = desktopId || getActiveSessionId() || "zappr";
   const all = listAllSessions();
   const s = all.find((item) => item.desktopId === targetId);
   return s && typeof s.volume === "number" ? s.volume : 100;
 }
 
 function setSessionVolume(desktopId, volume) {
-  const targetId = desktopId || getActiveSessionId() || "tuxchat";
+  const targetId = desktopId || getActiveSessionId() || "zappr";
   const vol = Math.max(0, Math.min(100, Math.round(Number(volume) || 0)));
   const list = getStoredSessions();
   const item = findOrCreateStoredSession(list, targetId);
@@ -665,7 +691,7 @@ function setSessionVolume(desktopId, volume) {
 }
 
 function setSessionHideInLinkPicker(desktopId, hide) {
-  const targetId = desktopId || "tuxchat";
+  const targetId = desktopId || "zappr";
   const list = getStoredSessions();
   const item = findOrCreateStoredSession(list, targetId);
   item.hideInLinkPicker = Boolean(hide);
@@ -675,7 +701,7 @@ function setSessionHideInLinkPicker(desktopId, hide) {
 }
 
 function recordSessionLinkUsage(desktopId) {
-  const targetId = desktopId || "tuxchat";
+  const targetId = desktopId || "zappr";
   const list = getStoredSessions();
   const item = findOrCreateStoredSession(list, targetId);
   item.lastLinkAt = Date.now();
@@ -692,7 +718,7 @@ function switchSession(desktopId) {
 }
 
 function setSessionIcon(desktopId, colorKey, pngBuffer) {
-  if (!/^tuxchat-(.+)$/.test(desktopId || "")) return;
+  if (!/^zappr-(.+)$/.test(desktopId || "")) return;
   const desktopPath = path.join(APPLICATIONS_DIR, `${desktopId}.desktop`);
   if (!fs.existsSync(desktopPath)) return;
 
@@ -811,7 +837,7 @@ ipcMain.on("sessions:context-menu", (_event, desktopId) => {
     (selfContext && selfContext.mainWindow) ||
     BrowserWindow.getAllWindows().find((w) => !w.isDestroyed());
   if (!win) return;
-  const isMain = desktopId === "tuxchat";
+  const isMain = desktopId === "zappr";
   const { openSessionColorDialog } = require("../sessionColor");
   const isMuted = getSessionMuted(desktopId);
   const currentVol = getSessionVolume(desktopId);

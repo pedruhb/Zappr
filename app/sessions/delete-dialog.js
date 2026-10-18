@@ -1,6 +1,6 @@
 const LOCALE =
   new URLSearchParams(location.search).get("locale") === "es" ? "es" : "en";
-const L = window.TUXCHAT_STRINGS[LOCALE].deleteDialog;
+const L = window.ZAPPR_STRINGS[LOCALE].deleteDialog;
 
 document.documentElement.lang = LOCALE;
 document.title = L.windowTitle;
