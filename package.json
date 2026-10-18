@@ -6,7 +6,8 @@
   "desktopName": "zappr.desktop",
   "homepage": "https://github.com/pedruhb/Zappr",
   "author": {
-    "name": "Zappr contributors"
+    "name": "pedruhb",
+    "email": "phbservicesbrasil@gmail.com"
   },
   "license": "MIT",
   "private": true,
