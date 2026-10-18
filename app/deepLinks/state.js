@@ -10,8 +10,12 @@ const path = require("node:path");
 // arrives. Lives under ~/.local/share, same tree as the .desktop/icon
 // files sessions/index.js already manages.
 function stateFile() {
+  const home =
+    app && typeof app.getPath === "function"
+      ? app.getPath("home")
+      : require("node:os").homedir();
   return path.join(
-    app.getPath("home"),
+    home,
     ".local",
     "share",
     "tuxchat",
@@ -19,27 +23,50 @@ function stateFile() {
   );
 }
 
-function getRememberedHandler() {
+function readState() {
   try {
-    const data = JSON.parse(fs.readFileSync(stateFile(), "utf8"));
-    return data.desktopId || null;
+    return JSON.parse(fs.readFileSync(stateFile(), "utf8")) || {};
   } catch {
-    return null;
+    return {};
   }
 }
 
-function setRememberedHandler(desktopId) {
+function writeState(data) {
   const file = stateFile();
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, JSON.stringify({ desktopId }));
+  fs.writeFileSync(file, JSON.stringify(data, null, 2));
+}
+
+function getRememberedHandler() {
+  return readState().desktopId || null;
+}
+
+function setRememberedHandler(desktopId) {
+  const state = readState();
+  state.desktopId = desktopId;
+  writeState(state);
 }
 
 function clearRememberedHandler() {
-  fs.rmSync(stateFile(), { force: true });
+  const state = readState();
+  delete state.desktopId;
+  writeState(state);
+}
+
+function getAutoRouteOldest() {
+  return Boolean(readState().autoRouteOldest);
+}
+
+function setAutoRouteOldest(enabled) {
+  const state = readState();
+  state.autoRouteOldest = Boolean(enabled);
+  writeState(state);
 }
 
 module.exports = {
   getRememberedHandler,
   setRememberedHandler,
   clearRememberedHandler,
+  getAutoRouteOldest,
+  setAutoRouteOldest,
 };

@@ -15,6 +15,9 @@ const L = (window.TUXCHAT_STRINGS &&
     savedSession: (name) => `Saved session: ${name}`,
     noSavedSession:
       "No session saved: you'll be asked every time a link arrives.",
+    autoRouteOldest: "Auto-rotate sessions",
+    autoRouteOldestHelp:
+      "When receiving a protocol link, the message is automatically sent to the session used longest ago, rotating through visible accounts. Hidden sessions are excluded.",
     forget: "Forget saved",
     save: "Save",
     close: "Cancel",
@@ -27,6 +30,51 @@ document.getElementById("description").textContent = L.description;
 document.getElementById("forget").textContent = L.forget;
 document.getElementById("save").textContent = L.save;
 document.getElementById("close").textContent = L.close;
+
+const autoRouteLabelEl = document.getElementById("auto-route-label");
+const autoRouteHelpTextEl = document.getElementById("auto-route-help-text");
+const autoRouteSwitchEl = document.getElementById("auto-route-switch");
+const autoRouteHelpBtn = document.getElementById("auto-route-help-btn");
+const autoRouteHelpWrapper = document.getElementById("auto-route-help-wrapper");
+
+const pickerL =
+  (window.TUXCHAT_STRINGS &&
+    window.TUXCHAT_STRINGS[LOCALE] &&
+    window.TUXCHAT_STRINGS[LOCALE].linkPicker) ||
+  {};
+if (autoRouteLabelEl) {
+  autoRouteLabelEl.textContent =
+    L.autoRouteOldest || pickerL.autoRouteOldest || "Alternar sessões automaticamente";
+}
+if (autoRouteHelpTextEl) {
+  autoRouteHelpTextEl.textContent =
+    L.autoRouteOldestHelp || pickerL.autoRouteOldestHelp ||
+    "Ao receber um link pelo protocolo, o TuxChat enviará a mensagem automaticamente para a sessão que foi usada há mais tempo, alternando entre as contas visíveis. Sessões ocultas não entram nesse sorteio.";
+}
+
+if (autoRouteHelpBtn && autoRouteHelpWrapper) {
+  autoRouteHelpBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    autoRouteHelpWrapper.classList.toggle("active");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!autoRouteHelpWrapper.contains(e.target)) {
+      autoRouteHelpWrapper.classList.remove("active");
+    }
+  });
+}
+
+if (autoRouteSwitchEl && window.deepLinksDialog && window.deepLinksDialog.setAutoRouteOldest) {
+  autoRouteSwitchEl.addEventListener("change", async () => {
+    try {
+      await window.deepLinksDialog.setAutoRouteOldest(autoRouteSwitchEl.checked);
+    } catch {
+      // Ignore error
+    }
+  });
+}
 
 const modalCloseBtn = document.getElementById("modal-close-btn");
 const listEl = document.getElementById("list");
@@ -145,6 +193,12 @@ async function load() {
 
     saveBtn.disabled = true;
     forgetBtn.disabled = !saved;
+
+    if (autoRouteSwitchEl && window.deepLinksDialog && window.deepLinksDialog.getAutoRouteOldest) {
+      const isAutoRoute = await window.deepLinksDialog.getAutoRouteOldest();
+      autoRouteSwitchEl.checked = Boolean(isAutoRoute);
+    }
+
     render();
   } catch {
     // Error loading data

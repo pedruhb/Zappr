@@ -15,6 +15,9 @@ const L = (window.TUXCHAT_STRINGS &&
     messageLabel: "Mensagem:",
     messagePlaceholder: "Digite ou edite a mensagem...",
     autoSend: "Enviar automaticamente",
+    autoRouteOldest: "Alternar sessões automaticamente",
+    autoRouteOldestHelp:
+      "Ao receber um link pelo protocolo, o TuxChat enviará a mensagem automaticamente para a sessão que foi usada há mais tempo, alternando entre as contas visíveis. Sessões ocultas não entram nesse sorteio.",
     sessionsHeading: "Enviar com a sessão:",
     remember: "Lembrar desta escolha para os próximos links",
     cancel: "Cancelar",
@@ -49,6 +52,11 @@ const messageInputEl = document.getElementById("message-input");
 const messageLabelEl = document.getElementById("message-label");
 const autoSendEl = document.getElementById("auto-send");
 const autoSendLabelEl = document.getElementById("auto-send-label");
+const autoRouteSwitchEl = document.getElementById("auto-route-switch");
+const autoRouteLabelEl = document.getElementById("auto-route-label");
+const autoRouteHelpBtn = document.getElementById("auto-route-help-btn");
+const autoRouteHelpWrapper = document.getElementById("auto-route-help-wrapper");
+const autoRouteHelpText = document.getElementById("auto-route-help-text");
 const sessionsHeadingEl = document.getElementById("sessions-heading");
 
 if (messageLabelEl && L.messageLabel) {
@@ -60,6 +68,12 @@ if (messageInputEl && L.messagePlaceholder) {
 }
 if (autoSendLabelEl && L.autoSend) {
   autoSendLabelEl.textContent = L.autoSend;
+}
+if (autoRouteLabelEl && L.autoRouteOldest) {
+  autoRouteLabelEl.textContent = L.autoRouteOldest;
+}
+if (autoRouteHelpText && L.autoRouteOldestHelp) {
+  autoRouteHelpText.textContent = L.autoRouteOldestHelp;
 }
 if (sessionsHeadingEl && L.sessionsHeading) {
   sessionsHeadingEl.textContent = L.sessionsHeading;
@@ -80,6 +94,36 @@ if (autoSendEl) {
       localStorage.setItem("tuxchat_picker_auto_send", String(autoSendEl.checked));
     } catch {
       // Local storage unavailable
+    }
+  });
+}
+
+// Auto-route switch initialization and event handling
+if (autoRouteSwitchEl && window.linkPicker && window.linkPicker.getAutoRouteOldest) {
+  window.linkPicker.getAutoRouteOldest().then((enabled) => {
+    autoRouteSwitchEl.checked = Boolean(enabled);
+  }).catch(() => {});
+
+  autoRouteSwitchEl.addEventListener("change", async () => {
+    try {
+      await window.linkPicker.setAutoRouteOldest(autoRouteSwitchEl.checked);
+    } catch {
+      // Ignore error
+    }
+  });
+}
+
+// Help tooltip button click toggle
+if (autoRouteHelpBtn && autoRouteHelpWrapper) {
+  autoRouteHelpBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    autoRouteHelpWrapper.classList.toggle("active");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!autoRouteHelpWrapper.contains(e.target)) {
+      autoRouteHelpWrapper.classList.remove("active");
     }
   });
 }

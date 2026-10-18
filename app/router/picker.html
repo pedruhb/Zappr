@@ -102,6 +102,33 @@
         color: var(--text-secondary);
         margin: 0;
       }
+      /* Modern WhatsApp-style custom scrollbar */
+      * {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(134, 150, 160, 0.28) transparent;
+      }
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(134, 150, 160, 0.28);
+        border-radius: 6px;
+        transition: background-color 0.2s ease;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(134, 150, 160, 0.48);
+      }
+      ::-webkit-scrollbar-thumb:active {
+        background: var(--whatsapp-green);
+      }
+      ::-webkit-scrollbar-corner {
+        background: transparent;
+      }
+
       .modal-body {
         padding: 14px 20px;
         flex: 1;
@@ -109,13 +136,7 @@
         flex-direction: column;
         gap: 10px;
         overflow-y: auto;
-      }
-      .modal-body::-webkit-scrollbar {
-        width: 6px;
-      }
-      .modal-body::-webkit-scrollbar-thumb {
-        background: #2a3942;
-        border-radius: 3px;
+        overflow-x: hidden;
       }
       .message-section {
         display: flex;
@@ -182,6 +203,151 @@
       .message-textarea::placeholder {
         color: var(--text-secondary);
         opacity: 0.65;
+      }
+      .auto-route-card {
+        position: relative;
+        z-index: 50;
+        background: #182229;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .auto-route-content {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+      }
+      .auto-route-label {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-primary);
+        cursor: pointer;
+        user-select: none;
+        flex: 1;
+      }
+      .auto-route-label:hover {
+        color: var(--whatsapp-green);
+      }
+      /* iOS / WhatsApp Style Switch */
+      .ios-switch {
+        position: relative;
+        display: inline-block;
+        width: 34px;
+        height: 19px;
+        flex-shrink: 0;
+      }
+      .ios-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+        margin: 0;
+      }
+      .ios-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #3b4a54;
+        transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 20px;
+      }
+      .ios-slider::before {
+        position: absolute;
+        content: "";
+        height: 13px;
+        width: 13px;
+        left: 3px;
+        bottom: 3px;
+        background-color: #ffffff;
+        transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 50%;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      }
+      .ios-switch input:checked + .ios-slider {
+        background-color: var(--whatsapp-green);
+      }
+      .ios-switch input:checked + .ios-slider::before {
+        transform: translateX(15px);
+      }
+      .ios-switch input:focus-visible + .ios-slider {
+        outline: 2px solid var(--whatsapp-green);
+        outline-offset: 2px;
+      }
+      /* Help popover */
+      .help-popover-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+      }
+      .help-circle-btn {
+        width: 17px;
+        height: 17px;
+        border-radius: 50%;
+        border: 1.2px solid var(--text-secondary);
+        background: transparent;
+        color: var(--text-secondary);
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 0;
+        transition: all 0.15s ease;
+      }
+      .help-circle-btn:hover,
+      .help-circle-btn:focus-visible,
+      .help-popover-wrapper.active .help-circle-btn {
+        color: var(--whatsapp-green);
+        border-color: var(--whatsapp-green);
+        background: rgba(0, 168, 132, 0.12);
+        outline: none;
+      }
+      .help-tooltip-bubble {
+        position: absolute;
+        top: calc(100% + 10px);
+        right: -6px;
+        width: 270px;
+        background: #111b21;
+        color: var(--text-primary);
+        border: 1px solid var(--border);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65);
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 11.5px;
+        line-height: 1.45;
+        z-index: 1000;
+        pointer-events: none;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-4px);
+        transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+      }
+      .help-tooltip-bubble .tooltip-arrow {
+        position: absolute;
+        top: -6px;
+        right: 10px;
+        width: 10px;
+        height: 10px;
+        background: #111b21;
+        border-left: 1px solid var(--border);
+        border-top: 1px solid var(--border);
+        transform: rotate(45deg);
+      }
+      .help-popover-wrapper:hover .help-tooltip-bubble,
+      .help-popover-wrapper:focus-within .help-tooltip-bubble,
+      .help-popover-wrapper.active .help-tooltip-bubble {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        pointer-events: auto;
       }
       .sessions-section-title {
         font-size: 11px;
@@ -503,6 +669,31 @@
             placeholder="Digite ou edite a mensagem..."
             spellcheck="true"
           ></textarea>
+        </div>
+
+        <div class="auto-route-card">
+          <div class="auto-route-content">
+            <label class="ios-switch">
+              <input id="auto-route-switch" type="checkbox" />
+              <span class="ios-slider"></span>
+            </label>
+            <label for="auto-route-switch" id="auto-route-label" class="auto-route-label">
+              Alternar sessões automaticamente
+            </label>
+            <div class="help-popover-wrapper" id="auto-route-help-wrapper">
+              <button
+                type="button"
+                id="auto-route-help-btn"
+                class="help-circle-btn"
+                aria-label="Como funciona o envio automático"
+                tabindex="0"
+              >?</button>
+              <div class="help-tooltip-bubble" id="auto-route-tooltip" role="tooltip">
+                <div class="tooltip-arrow"></div>
+                <span id="auto-route-help-text">Ao receber um link pelo protocolo, o TuxChat enviará a mensagem automaticamente para a sessão que foi usada há mais tempo, alternando entre as contas visíveis. Sessões ocultas não entram nesse sorteio.</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div id="sessions-heading" class="sessions-section-title">

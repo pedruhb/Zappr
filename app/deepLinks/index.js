@@ -7,6 +7,8 @@ const {
   getRememberedHandler,
   setRememberedHandler,
   clearRememberedHandler,
+  getAutoRouteOldest,
+  setAutoRouteOldest,
 } = require("./state");
 const { ensureRouterRegistered } = require("./router-install");
 const {
@@ -29,6 +31,11 @@ ipcMain.handle("deeplinks:clear-handler", () => {
 ipcMain.handle("deeplinks:toggle-hide", (_event, { desktopId, hide }) => {
   const { setSessionHideInLinkPicker } = require("../sessions");
   setSessionHideInLinkPicker(desktopId, hide);
+  return { ok: true };
+});
+ipcMain.handle("deeplinks:get-auto-route-oldest", () => getAutoRouteOldest());
+ipcMain.handle("deeplinks:set-auto-route-oldest", (_event, enabled) => {
+  setAutoRouteOldest(enabled);
   return { ok: true };
 });
 
@@ -59,7 +66,7 @@ function openSettingsDialog() {
     y: pY,
   } = parent.getContentBounds();
   const mWidth = 440;
-  const mHeight = 425;
+  const mHeight = 480;
   const mX = Math.round(pX + (pWidth - mWidth) / 2);
   const mY = Math.round(pY + (pHeight - mHeight) / 2);
 

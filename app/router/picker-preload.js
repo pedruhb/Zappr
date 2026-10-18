@@ -16,5 +16,8 @@ contextBridge.exposeInMainWorld("linkPicker", {
     }),
   toggleHide: (desktopId, hide) =>
     ipcRenderer.invoke("picker:toggle-hide", { desktopId, hide }),
+  getAutoRouteOldest: () => ipcRenderer.invoke("picker:get-auto-route-oldest"),
+  setAutoRouteOldest: (enabled) =>
+    ipcRenderer.invoke("picker:set-auto-route-oldest", enabled),
   cancel: () => ipcRenderer.send("picker:cancel"),
 });

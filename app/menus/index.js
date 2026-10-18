@@ -8,6 +8,10 @@ const {
   canRenameSelf,
 } = require("../sessions");
 const { openSettingsDialog } = require("../deepLinks");
+const {
+  getAutoRouteOldest,
+  setAutoRouteOldest,
+} = require("../deepLinks/state");
 const { openSessionColorDialog } = require("../sessionColor");
 const { openAboutModal } = require("../about");
 const { getWhatsAppContents } = require("../mainWindow");
@@ -81,6 +85,12 @@ function buildTemplate(win) {
       { label: t("menu.sessionColor"), click: () => openSessionColorDialog() },
       { type: "separator" },
       { label: t("menu.whatsappLinks"), click: () => openSettingsDialog() },
+      {
+        label: t("menu.autoRouteOldest"),
+        type: "checkbox",
+        checked: getAutoRouteOldest(),
+        click: (menuItem) => setAutoRouteOldest(menuItem.checked),
+      },
     ],
     view: [
       {

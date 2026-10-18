@@ -61,6 +61,9 @@ window.TUXCHAT_STRINGS = {
       messageLabel: "Mensaje:",
       messagePlaceholder: "Escribe o edita el mensaje...",
       autoSend: "Enviar automáticamente",
+      autoRouteOldest: "Alternar sesiones automáticamente",
+      autoRouteOldestHelp:
+        "Al recibir un enlace por protocolo, el mensaje se enviará automáticamente a la sesión utilizada hace más tiempo, rotando entre las cuentas visibles. Las sesiones ocultas no participan de este sorteo.",
       sessionsHeading: "Enviar con la sesión:",
       remember: "Recordar esta elección para los próximos enlaces",
       open: "Abrir",
@@ -182,6 +185,9 @@ window.TUXCHAT_STRINGS = {
       messageLabel: "Message:",
       messagePlaceholder: "Type or edit message...",
       autoSend: "Send automatically",
+      autoRouteOldest: "Auto-rotate sessions",
+      autoRouteOldestHelp:
+        "When receiving a protocol link, the message is automatically sent to the session used longest ago, rotating through visible accounts. Hidden sessions are excluded.",
       sessionsHeading: "Send with session:",
       remember: "Remember this choice for future links",
       open: "Open",
@@ -300,6 +306,9 @@ window.TUXCHAT_STRINGS = {
       messageLabel: "Mensagem:",
       messagePlaceholder: "Digite ou edite a mensagem...",
       autoSend: "Enviar automaticamente",
+      autoRouteOldest: "Alternar sessões automaticamente",
+      autoRouteOldestHelp:
+        "Ao receber um link pelo protocolo, o TuxChat enviará a mensagem automaticamente para a sessão que foi usada há mais tempo, alternando entre as contas visíveis. Sessões ocultas não entram nesse sorteio.",
       sessionsHeading: "Enviar com a sessão:",
       remember: "Lembrar desta escolha para os próximos links",
       open: "Abrir",

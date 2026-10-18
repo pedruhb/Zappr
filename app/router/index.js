@@ -6,6 +6,8 @@ const { extractDeepLinkArg, parseDeepLink } = require("../deepLinks/translate");
 const {
   getRememberedHandler,
   setRememberedHandler,
+  getAutoRouteOldest,
+  setAutoRouteOldest,
 } = require("../deepLinks/state");
 const {
   listAllSessions,
@@ -13,6 +15,20 @@ const {
   setSessionHideInLinkPicker,
 } = require("../sessions");
 const { currentLocale } = require("../i18n");
+
+function getOldestVisibleSession() {
+  const { listAllSessions } = require("../sessions");
+  const sessions = listAllSessions();
+  const visible = sessions.filter((s) => !s.hideInLinkPicker);
+  if (visible.length === 0) return null;
+  visible.sort((a, b) => {
+    const tA = typeof a.lastLinkAt === "number" ? a.lastLinkAt : 0;
+    const tB = typeof b.lastLinkAt === "number" ? b.lastLinkAt : 0;
+    if (tA !== tB) return tA - tB;
+    return (a.profileName || "").localeCompare(b.profileName || "");
+  });
+  return visible[0];
+}
 
 let currentPickerWin = null;
 let currentOnChosen = null;
@@ -48,6 +64,13 @@ function ensureIpcHandlers() {
   ipcMain.handle("picker:toggle-hide", (_event, { desktopId, hide }) => {
     setSessionHideInLinkPicker(desktopId, hide);
     return { ok: true };
+  });
+
+  ipcMain.handle("picker:get-auto-route-oldest", () => getAutoRouteOldest());
+
+  ipcMain.handle("picker:set-auto-route-oldest", (_event, enabled) => {
+    setAutoRouteOldest(enabled);
+    return { ok: true, autoRouteOldest: enabled };
   });
 
   ipcMain.on("picker:cancel", () => {
@@ -92,7 +115,7 @@ function openPickerModal(parentWin, whatsappUrl, onChosen) {
   const text = parsed?.text || "";
 
   const mWidth = 440;
-  const mHeight = 540;
+  const mHeight = 580;
   const winOptions = {
     width: mWidth,
     height: mHeight,
@@ -176,6 +199,21 @@ function openPickerModal(parentWin, whatsappUrl, onChosen) {
 function handleWhatsAppLink(whatsappUrl, parentWin) {
   if (!whatsappUrl) return;
 
+  if (getAutoRouteOldest()) {
+    const targetSession = getOldestVisibleSession();
+    if (targetSession) {
+      const { recordSessionLinkUsage } = require("../sessions");
+      recordSessionLinkUsage(targetSession.desktopId);
+
+      const { sendWhatsAppMessageToSession } = require("../mainWindow");
+      const parsed = parseDeepLink(whatsappUrl);
+      const phone = parsed?.phone || "";
+      const text = parsed?.text || "";
+      sendWhatsAppMessageToSession(targetSession.desktopId, phone, text, true);
+      return;
+    }
+  }
+
   const win =
     parentWin ||
     BrowserWindow.getAllWindows().find(
@@ -214,6 +252,17 @@ function run(argv) {
     return;
   }
   isStandalone = true;
+  if (getAutoRouteOldest()) {
+    const targetSession = getOldestVisibleSession();
+    if (targetSession) {
+      const { recordSessionLinkUsage } = require("../sessions");
+      recordSessionLinkUsage(targetSession.desktopId);
+      const { forwardToSession } = require("../deepLinks/forward");
+      forwardToSession(targetSession.desktopId, whatsappUrl);
+      app.quit();
+      return;
+    }
+  }
   const { forwardToSession } = require("../deepLinks/forward");
   openPickerModal(null, whatsappUrl, (desktopId, originalUrl, extra) => {
     let finalUrl = whatsappUrl;
@@ -235,4 +284,5 @@ module.exports = {
   run,
   openPickerModal,
   handleWhatsAppLink,
+  getOldestVisibleSession,
 };
