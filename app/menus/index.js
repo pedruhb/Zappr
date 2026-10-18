@@ -10,6 +10,7 @@ const { openAboutModal } = require("../about");
 const { getWhatsAppContents } = require("../mainWindow");
 const { t, currentLocale, setLocale } = require("../i18n");
 const titlebar = require("../mainWindow/titlebar");
+const { exportBackup, importBackup } = require("../sessions/backup");
 
 function quit() {
   app.isQuitting = true;
@@ -62,6 +63,15 @@ function buildTemplate(win) {
         ],
       },
       { type: "separator" },
+      {
+        label: t("menu.exportSettings"),
+        click: () => exportBackup(win),
+      },
+      {
+        label: t("menu.importSettings"),
+        click: () => importBackup(win),
+      },
+      { type: "separator" },
       { label: t("menu.quit"), accelerator: "CmdOrCtrl+Q", click: quit },
     ],
     settings: [
@@ -72,6 +82,15 @@ function buildTemplate(win) {
         checked: getAutoRouteOldest(),
         click: (menuItem) => setAutoRouteOldest(menuItem.checked),
       },
+      { type: "separator" },
+      {
+        label: t("menu.exportSettings"),
+        click: () => exportBackup(win),
+      },
+      {
+        label: t("menu.importSettings"),
+        click: () => importBackup(win),
+      },
     ],
     sessions: [
       { label: t("menu.whatsappLinks"), click: () => openSettingsDialog() },
@@ -80,6 +99,15 @@ function buildTemplate(win) {
         type: "checkbox",
         checked: getAutoRouteOldest(),
         click: (menuItem) => setAutoRouteOldest(menuItem.checked),
+      },
+      { type: "separator" },
+      {
+        label: t("menu.exportSettings"),
+        click: () => exportBackup(win),
+      },
+      {
+        label: t("menu.importSettings"),
+        click: () => importBackup(win),
       },
     ],
     view: [

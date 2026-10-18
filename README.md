@@ -17,6 +17,9 @@ Cliente desktop moderno e de alta performance para WhatsApp Web construído em E
 - **Barra lateral estilo Discord**: Gerencie até 6 contas do WhatsApp simultaneamente em uma única janela elegante.
 - **Isolamento total de sessão**: Cada aba opera em uma partição isolada do Electron (`persist:partition`), mantendo dados, logins e cookies 100% segregados e seguros.
 - **Reorganização por Arrastar e Soltar (Drag & Drop)**: Reordene facilmente suas contas na barra lateral arrastando os ícones para cima ou para baixo com indicador visual verde e animação fluida.
+- **Sincronização de Foto do Perfil do WhatsApp**: Puxe e aplique automaticamente a foto oficial do seu perfil do WhatsApp com um clique no modal de edição ou diretamente pelo menu de contexto de clique direito da aba.
+- **Indicador de Status (Aguardando QR Code)**: Badge âmbar pulsante na barra lateral indicando em tempo real quando uma sessão estiver desconectada ou aguardando leitura do código QR.
+- **Recarregar Sessão Individual**: Recarregue uma aba específica pelo menu de clique direito sem precisar reiniciar ou afetar as demais conexões.
 - **Identificação visual rápida**: Personalize o avatar de cada sessão com fotos customizadas (corte quadrado e compressão automática em WebP) ou iniciais dinâmicas de alto contraste.
 - **Alternância ultrarrápida**: Troca instantânea de abas gerenciada via `WebContentsView`, mantendo o consumo de memória baixo e todas as conexões de chat ativas em segundo plano.
 
@@ -25,6 +28,11 @@ Cliente desktop moderno e de alta performance para WhatsApp Web construído em E
 - **Contador individual por sessão**: Cada ícone na barra lateral exibe um badge flutuante com a contagem exata de conversas não lidas, extraído diretamente da interface do WhatsApp Web.
 - **Animação fluida de pop**: Efeito _bounce_ quando novas mensagens chegam para chamar sua atenção discretamente.
 - **Sincronização global**: Integração com a contagem da barra de tarefas/dock do sistema operacional.
+
+### 💾 Backup e Restauração de Configurações
+
+- **Exportação e Importação com um clique**: Salve a ordem das suas sessões, apelidos de perfil, fotos, cores e preferências de distribuição de links em um arquivo `.json` portátil através do menu **Configurações > Exportar/Importar**.
+- **Migração simplificada**: Transfira facilmente suas configurações personalizadas entre diferentes computadores ou restaure backups rapidamente.
 
 ### 🔀 Distribuição Inteligente de Links (`whatsapp://` e `wa.me`)
 
@@ -52,6 +60,10 @@ Cliente desktop moderno e de alta performance para WhatsApp Web construído em E
 
 - O Zappr vem configurado por padrão em **Português do Brasil (`pt-BR`)**, contando também com suporte completo a **Inglês (`en`)** e **Espanhol (`es`)**.
 - Troque o idioma a qualquer instante pelo menu **Arquivo > Idioma** sem necessidade de reiniciar.
+
+### 🔄 Atualizações Automáticas e Modal Sobre
+
+- **Verificador de Atualizações Integrado**: Verifique se há novas versões disponíveis diretamente na janela Sobre o Zappr, com barra de progresso de download e notas de versão integradas via GitHub Releases.
 
 ### 💬 Navegação e Links Externos Seguros
 

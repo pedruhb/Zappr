@@ -30,4 +30,7 @@ contextBridge.exposeInMainWorld("sessionsSidebar", {
   getUnreadCounts: () => ipcRenderer.invoke("sessions:get-unread-counts"),
   onUnreadUpdated: (callback) =>
     ipcRenderer.on("sessions:unread-updated", (_event, data) => callback(data)),
+  getStatuses: () => ipcRenderer.invoke("sessions:get-statuses"),
+  onStatusUpdated: (callback) =>
+    ipcRenderer.on("sessions:status-updated", (_event, data) => callback(data)),
 });

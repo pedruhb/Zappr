@@ -21,7 +21,7 @@ function openSessionModal(parentWin, options = {}) {
     y: pY,
   } = parent.getContentBounds();
   const mWidth = 430;
-  const mHeight = 330;
+  const mHeight = options.mode === "edit" ? 395 : 330;
   const mX = Math.round(pX + (pWidth - mWidth) / 2);
   const mY = Math.round(pY + (pHeight - mHeight) / 2);
 

@@ -7,6 +7,7 @@ const sidebarEl = document.getElementById("sessions-sidebar");
 let currentActiveId = "zappr";
 let currentSessions = [];
 const unreadCounts = new Map(); // desktopId -> unread count
+const qrWaitingSessions = new Map(); // desktopId -> boolean
 
 let currentAddSessionLabel = "Add session";
 let currentMutedLabel = "Mute audio";
@@ -31,6 +32,16 @@ function updateSessionUnreadBadge(desktopId, count) {
   } else {
     badge.textContent = "";
     badge.hidden = true;
+  }
+}
+
+function updateSessionQrBadge(desktopId, isQrWaiting) {
+  qrWaitingSessions.set(desktopId, Boolean(isQrWaiting));
+  const badge = sidebarEl.querySelector(
+    `.session-qr-badge[data-qr-badge="${desktopId}"]`,
+  );
+  if (badge) {
+    badge.hidden = !isQrWaiting;
   }
 }
 
@@ -327,6 +338,23 @@ function buildSidebarDOM() {
       wrapper.appendChild(mutedBadge);
     }
 
+    // QR Code / waiting login badge (bottom left)
+    const isQr = Boolean(qrWaitingSessions.get(session.desktopId));
+    const qrBadge = document.createElement("div");
+    qrBadge.className = "session-qr-badge";
+    qrBadge.setAttribute("data-qr-badge", session.desktopId);
+    qrBadge.title = "Aguardando leitura do QR Code";
+    qrBadge.hidden = !isQr;
+    qrBadge.innerHTML = `
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7"></rect>
+        <rect x="14" y="3" width="7" height="7"></rect>
+        <rect x="3" y="14" width="7" height="7"></rect>
+        <rect x="14" y="14" width="7" height="7"></rect>
+      </svg>
+    `;
+    wrapper.appendChild(qrBadge);
+
     // Unread conversations badge (top right)
     const unreadBadge = document.createElement("div");
     unreadBadge.className = "session-unread-badge";
@@ -518,6 +546,25 @@ if (window.sessionsSidebar) {
   if (typeof window.sessionsSidebar.onUnreadUpdated === "function") {
     window.sessionsSidebar.onUnreadUpdated(({ desktopId, count }) => {
       updateSessionUnreadBadge(desktopId, count);
+    });
+  }
+
+  if (typeof window.sessionsSidebar.getStatuses === "function") {
+    window.sessionsSidebar
+      .getStatuses()
+      .then((statuses) => {
+        if (statuses) {
+          for (const [id, data] of Object.entries(statuses)) {
+            updateSessionQrBadge(id, data.isQrWaiting);
+          }
+        }
+      })
+      .catch(() => {});
+  }
+
+  if (typeof window.sessionsSidebar.onStatusUpdated === "function") {
+    window.sessionsSidebar.onStatusUpdated(({ desktopId, isQrWaiting }) => {
+      updateSessionQrBadge(desktopId, isQrWaiting);
     });
   }
 

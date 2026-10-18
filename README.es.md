@@ -14,9 +14,12 @@ Cliente de escritorio moderno y de alto rendimiento para WhatsApp Web construido
 
 ### 👥 Múltiples Sesiones Aisladas en Pestañas
 
-- **Barra lateral derecha estilo Discord**: Administrá hasta 6 cuentas de WhatsApp simultáneamente en una sola ventana elegante.
+- **Barra lateral estilo Discord**: Administrá hasta 6 cuentas de WhatsApp simultáneamente en una sola ventana elegante.
 - **Aislamiento total de sesión**: Cada pestaña opera dentro de una partición aislada de Electron (`persist:partition`), manteniendo datos, logins y cookies 100% independientes y seguros.
-- **Reorganización por Arrastrar y Soltar (Drag & Drop)**: Reordená fácilmente tus cuentas en la barra lateral arrastrando los íconos hacia arriba o abajo con indicador visual verde y animación fluida.
+- **Reorganización por Arrastar y Soltar (Drag & Drop)**: Reordená fácilmente tus cuentas en la barra lateral arrastrando los íconos hacia arriba o abajo con indicador visual verde y animación fluida.
+- **Sincronización de Foto de Perfil de WhatsApp**: Obtené y aplicá automáticamente la foto oficial de tu perfil de WhatsApp con un solo clic en el editor de sesión o directamente desde el menú contextual de clic derecho.
+- **Indicador de Estado (Esperando código QR)**: Distintivo ámbar pulsante en la barra lateral indicando en tiempo real cuando una sesión esté desconectada o esperando lectura del código QR.
+- **Recargar Sesión Individual**: Recargá una pestaña puntual desde el menú de clic derecho sin reiniciar toda la aplicación.
 - **Identificación visual rápida**: Personalizá el avatar de cada sesión con fotos personalizadas (recorte cuadrado y compresión automática en WebP) o iniciales dinámicas de alto contraste.
 - **Cambio instantáneo**: Alternancia ultrarrápida entre pestañas gestionada vía `WebContentsView`, manteniendo bajo el consumo de memoria y conservando todas las conexiones activas en segundo plano.
 
@@ -26,7 +29,12 @@ Cliente de escritorio moderno y de alto rendimiento para WhatsApp Web construido
 - **Animación suave de pop**: Efecto _bounce_ al recibir nuevos mensajes para alertarte discretamente.
 - **Sincronización global**: Integración con el contador del dock o barra de tareas del sistema operativo.
 
-### 🔀 Distribución Inteligente de Enlaces (`whatsapp://` y `wa.me`)
+### 💾 Copia de Seguridad y Restauración
+
+- **Exportación e Importación con un clic**: Guardá el orden de tus sesiones, nombres, avatares, colores y preferencias de enrutamiento de enlaces en un archivo `.json` portable mediante el menú **Configuración > Exportar/Importar**.
+- **Migración simple**: Transferí tus cuentas y configuraciones a otra computadora o restaurá copias de seguridad al instante.
+
+### 🔀 Distribuição Inteligente de Enlaces (`whatsapp://` y `wa.me`)
 
 - **Manejador nativo de protocolo**: Zappr se registra en Linux y Windows para interceptar enlaces `whatsapp://` y URLs `wa.me`.
 - **Enrutamiento automático a la sesión inactiva por más tiempo**: Activá la opción de asignación automática para distribuir los mensajes entrantes por rotación inteligente (_round-robin_), dirigiendo el contacto a la sesión que hace más tiempo no atiende enlaces.
@@ -52,6 +60,10 @@ Cliente de escritorio moderno y de alto rendimiento para WhatsApp Web construido
 
 - Zappr viene configurado por defecto en **Português do Brasil (`pt-BR`)**, con soporte completo para **Inglés (`en`)** y **Español (`es`)**.
 - Cambiá de idioma en cualquier momento desde el menú **Archivo > Idioma** sin necesidad de reiniciar.
+
+### 🔄 Actualizaciones Automáticas y Modal Acerca de
+
+- **Verificador Integrado de Actualizaciones**: Comprobá si hay nuevas versiones disponibles directamente en la ventana Acerca de Zappr con barra de progreso de descarga y notas de versión vía GitHub Releases.
 
 ### 💬 Navegación y Enlaces Externos Seguros
 

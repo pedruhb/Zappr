@@ -10,6 +10,8 @@ const {
   switchSessionTab,
   removeSessionTab,
   getActiveSessionId,
+  extractSessionWhatsAppPhoto,
+  reloadSessionTab,
 } = require("../mainWindow");
 const {
   openSessionModal,
@@ -155,6 +157,7 @@ function listDeletableSessions() {
       volume: typeof s.volume === "number" ? s.volume : 100,
       hideInLinkPicker: Boolean(s.hideInLinkPicker),
       lastLinkAt: s.lastLinkAt || null,
+      syncWhatsAppPhoto: Boolean(s.syncWhatsAppPhoto),
     }));
 
   if (process.platform === "linux" && fs.existsSync(APPLICATIONS_DIR)) {
@@ -225,6 +228,9 @@ function listAllSessions() {
         : 100,
     hideInLinkPicker: mainCustom ? Boolean(mainCustom.hideInLinkPicker) : false,
     lastLinkAt: mainCustom ? mainCustom.lastLinkAt || null : null,
+    syncWhatsAppPhoto: mainCustom
+      ? Boolean(mainCustom.syncWhatsAppPhoto)
+      : false,
   };
 
   const deletable = listDeletableSessions();
@@ -429,6 +435,9 @@ function updateSession(payload) {
   if (rawName) item.profileName = rawName;
   if (avatar !== undefined) item.avatar = avatar;
   if (payload.color !== undefined) item.color = payload.color;
+  if (payload.syncWhatsAppPhoto !== undefined) {
+    item.syncWhatsAppPhoto = Boolean(payload.syncWhatsAppPhoto);
+  }
 
   saveStoredSessions(list);
 
@@ -449,6 +458,7 @@ function updateSession(payload) {
     desktopId,
     profileName: item.profileName,
     avatar: item.avatar,
+    syncWhatsAppPhoto: Boolean(item.syncWhatsAppPhoto),
   };
 }
 
@@ -805,6 +815,9 @@ ipcMain.handle("sessions:switch", (_event, desktopId) =>
 );
 ipcMain.handle("sessions:create", (_event, payload) => createSession(payload));
 ipcMain.handle("sessions:update", (_event, payload) => updateSession(payload));
+ipcMain.handle("sessions:fetch-whatsapp-photo", (_event, desktopId) =>
+  extractSessionWhatsAppPhoto(desktopId),
+);
 ipcMain.handle("sessions:delete", (_event, desktopId) =>
   deleteSession(desktopId),
 );
@@ -832,6 +845,23 @@ ipcMain.on("sessions:modal-close", () => {
 ipcMain.on("sessions:modal-resize", (_event, height) => {
   resizeSessionModal(height);
 });
+async function syncWhatsAppPhotoForSession(desktopId) {
+  try {
+    const photoRes = await extractSessionWhatsAppPhoto(desktopId);
+    if (photoRes.ok && photoRes.avatar) {
+      updateSession({
+        desktopId,
+        avatar: photoRes.avatar,
+        syncWhatsAppPhoto: true,
+      });
+      return { ok: true, avatar: photoRes.avatar };
+    }
+    return { ok: false, error: photoRes.error };
+  } catch (err) {
+    return { ok: false, error: err.message || String(err) };
+  }
+}
+
 ipcMain.on("sessions:context-menu", (_event, desktopId) => {
   const win =
     (selfContext && selfContext.mainWindow) ||
@@ -850,6 +880,16 @@ ipcMain.on("sessions:context-menu", (_event, desktopId) => {
     {
       label: t("menu.sessionColor"),
       click: () => openSessionColorDialog(desktopId),
+    },
+    {
+      label: t("menu.syncWhatsAppPhoto"),
+      click: async () => {
+        await syncWhatsAppPhotoForSession(desktopId);
+      },
+    },
+    {
+      label: t("menu.reloadSession"),
+      click: () => reloadSessionTab(desktopId),
     },
     { type: "separator" },
     {
@@ -943,6 +983,8 @@ module.exports = {
   canRenameSelf,
   refreshDesktopCaches,
   setSessionIcon,
+  getStoredSessions,
+  saveStoredSessions,
   MAX_SESSIONS,
   MAX_NAME_LENGTH,
 };

@@ -7,9 +7,12 @@ const {
   WebContentsView,
   clipboard,
   ipcMain,
+  nativeImage,
+  net,
   session,
   shell,
 } = require("electron");
+const { Buffer } = require("node:buffer");
 const path = require("node:path");
 const { t } = require("../i18n");
 const titlebar = require("./titlebar");
@@ -91,6 +94,7 @@ let currentConfig = null;
 let activeSessionId = "zappr";
 const sessionViews = new Map(); // desktopId -> WebContentsView
 const sessionUnreadCounts = new Map(); // desktopId -> unread count
+const sessionQrWaiting = new Map(); // desktopId -> boolean
 
 function getDesktopIdByWebContents(sender) {
   if (!sender) return null;
@@ -150,6 +154,27 @@ ipcMain.handle("sessions:get-unread-counts", () => {
   return result;
 });
 
+function broadcastSessionStatus(desktopId, isQrWaiting) {
+  if (currentMainWindow && !currentMainWindow.isDestroyed()) {
+    try {
+      currentMainWindow.webContents.send("sessions:status-updated", {
+        desktopId,
+        isQrWaiting,
+      });
+    } catch {
+      // Window may be closing
+    }
+  }
+}
+
+ipcMain.handle("sessions:get-statuses", () => {
+  const result = {};
+  for (const [id, qr] of sessionQrWaiting.entries()) {
+    result[id] = { isQrWaiting: qr };
+  }
+  return result;
+});
+
 function pollSessionUnreadCounts() {
   for (const [id, view] of sessionViews.entries()) {
     if (!view || !view.webContents || view.webContents.isDestroyed()) continue;
@@ -158,6 +183,7 @@ function pollSessionUnreadCounts() {
         `
         (function() {
           try {
+            let unread = 0;
             const chatBtn = document.querySelector(
               'button[data-navbar-item-index="0"], ' +
               'button[aria-label="Conversas"], ' +
@@ -172,25 +198,42 @@ function pollSessionUnreadCounts() {
                 if (statusSpan) {
                   const text = statusSpan.textContent.trim();
                   const num = parseInt(text, 10);
-                  if (!isNaN(num) && num > 0) return text;
+                  if (!isNaN(num) && num > 0) unread = text;
                 }
               }
             }
-            if (document.title) {
+            if (!unread && document.title) {
               const match = document.title.match(/^\\((\\d+)\\)/);
-              if (match) return match[1];
+              if (match) unread = match[1];
             }
-          } catch (_) {}
-          return 0;
+
+            const hasQr = Boolean(
+              document.querySelector('canvas[aria-label*="scan" i], canvas[aria-label*="código" i], [data-ref], [data-testid="qrcode"], div[data-testid="qrcode-container"]') ||
+              (!document.querySelector('button[data-navbar-item-index="0"]') && !document.querySelector('#side') && document.querySelector('canvas'))
+            );
+
+            return { unread, isQrWaiting: hasQr };
+          } catch (_) {
+            return { unread: 0, isQrWaiting: false };
+          }
         })()
       `,
       )
-      .then((extracted) => {
+      .then((data) => {
+        if (!data) return;
         const normalized =
-          extracted && extracted !== "0" && extracted !== 0 ? extracted : 0;
+          data.unread && data.unread !== "0" && data.unread !== 0
+            ? data.unread
+            : 0;
         if (sessionUnreadCounts.get(id) !== normalized) {
           sessionUnreadCounts.set(id, normalized);
           broadcastUnreadCount(id, normalized);
+        }
+
+        const isQr = Boolean(data.isQrWaiting);
+        if (sessionQrWaiting.get(id) !== isQr) {
+          sessionQrWaiting.set(id, isQr);
+          broadcastSessionStatus(id, isQr);
         }
       })
       .catch(() => {});
@@ -311,6 +354,23 @@ function getOrCreateSessionView(desktopId) {
     `,
       )
       .catch(() => {});
+
+    setTimeout(async () => {
+      try {
+        if (!view.webContents || view.webContents.isDestroyed()) return;
+        const { listAllSessions, updateSession } = require("../sessions");
+        const sessions = listAllSessions();
+        const s = sessions.find((item) => item.desktopId === desktopId);
+        if (s && s.syncWhatsAppPhoto) {
+          const photoRes = await extractSessionWhatsAppPhoto(desktopId);
+          if (photoRes.ok && photoRes.avatar && photoRes.avatar !== s.avatar) {
+            updateSession({ desktopId, avatar: photoRes.avatar });
+          }
+        }
+      } catch {
+        // Auto-sync non-critical error
+      }
+    }, 4500);
   });
 
   view.webContents.loadURL(currentConfig.url);
@@ -819,12 +879,197 @@ function sendWhatsAppMessageToSession(
   }
 }
 
+async function extractSessionWhatsAppPhoto(desktopId) {
+  const targetId = desktopId || activeSessionId || "zappr";
+  let view = sessionViews.get(targetId);
+  if (!view && currentMainWindow && currentConfig) {
+    view = getOrCreateSessionView(targetId);
+  }
+  if (!view || !view.webContents || view.webContents.isDestroyed()) {
+    return { ok: false, error: "Sessão não disponível ou não carregada." };
+  }
+
+  const jsExtract = `
+    (async function() {
+      try {
+        function findProfileImg() {
+          const profileLabels = [
+            "você",
+            "you",
+            "perfil",
+            "profile",
+            "tú",
+            "vos",
+            "voce",
+          ];
+          const buttons = Array.from(
+            document.querySelectorAll(
+              'button[data-navbar-item="true"], button[aria-label]'
+            )
+          );
+          for (const btn of buttons) {
+            const label = (btn.getAttribute("aria-label") || "")
+              .trim()
+              .toLowerCase();
+            if (profileLabels.some((l) => label === l || label.includes(l))) {
+              const img = btn.querySelector("img");
+              if (img && img.src) return img.src;
+            }
+          }
+
+          for (const btn of buttons) {
+            if (btn.getAttribute("data-navbar-item") === "true") {
+              const img = btn.querySelector("img");
+              if (
+                img &&
+                img.src &&
+                (img.src.includes("whatsapp.net") ||
+                  img.src.startsWith("blob:") ||
+                  img.src.startsWith("data:"))
+              ) {
+                return img.src;
+              }
+            }
+          }
+
+          const headerImgs = Array.from(
+            document.querySelectorAll(
+              'header img, nav img, [role="navigation"] img'
+            )
+          );
+          for (const img of headerImgs) {
+            if (
+              img.src &&
+              (img.src.includes("whatsapp.net") ||
+                img.src.includes("pps.whatsapp.net"))
+            ) {
+              return img.src;
+            }
+          }
+
+          const indexedImg = document.querySelector(
+            'button[data-navbar-item-index="7"] img, button[data-navbar-item-index="6"] img, button[data-navbar-item-index="8"] img'
+          );
+          if (indexedImg && indexedImg.src) return indexedImg.src;
+
+          const anyImg = document.querySelector('img[src*="whatsapp.net"]');
+          if (anyImg && anyImg.src) return anyImg.src;
+
+          return null;
+        }
+
+        const src = findProfileImg();
+        if (!src) return { ok: false, error: "not_found" };
+
+        if (src.startsWith("data:")) {
+          return { ok: true, url: src, isDataUrl: true };
+        }
+
+        if (src.startsWith("blob:")) {
+          try {
+            const res = await fetch(src);
+            const blob = await res.blob();
+            return new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onload = () =>
+                resolve({ ok: true, url: reader.result, isDataUrl: true });
+              reader.onerror = () =>
+                resolve({ ok: true, url: src, isDataUrl: false });
+              reader.readAsDataURL(blob);
+            });
+          } catch {
+            return { ok: true, url: src, isDataUrl: false };
+          }
+        }
+
+        return { ok: true, url: src, isDataUrl: false };
+      } catch (err) {
+        return { ok: false, error: String(err) };
+      }
+    })();
+  `;
+
+  let evalResult;
+  try {
+    evalResult = await view.webContents.executeJavaScript(jsExtract);
+  } catch (err) {
+    return { ok: false, error: err.message || "Falha ao consultar a sessão." };
+  }
+
+  if (!evalResult || !evalResult.ok || !evalResult.url) {
+    return {
+      ok: false,
+      error:
+        "Foto do perfil do WhatsApp não encontrada. Verifique se o WhatsApp está logado.",
+    };
+  }
+
+  try {
+    let natImg;
+    if (evalResult.isDataUrl) {
+      natImg = nativeImage.createFromDataURL(evalResult.url);
+    } else {
+      const resp = await net.fetch(evalResult.url);
+      if (!resp.ok) {
+        return {
+          ok: false,
+          error: `Falha ao baixar foto: status ${resp.status}`,
+        };
+      }
+      const arrayBuf = await resp.arrayBuffer();
+      natImg = nativeImage.createFromBuffer(Buffer.from(arrayBuf));
+    }
+
+    if (!natImg || natImg.isEmpty()) {
+      return { ok: false, error: "Imagem retornada pelo WhatsApp é inválida." };
+    }
+
+    const size = natImg.getSize();
+    const minDim = Math.min(size.width, size.height);
+    if (minDim <= 0) {
+      return { ok: false, error: "Dimensão da imagem inválida." };
+    }
+    const cropX = Math.round((size.width - minDim) / 2);
+    const cropY = Math.round((size.height - minDim) / 2);
+    const cropped = natImg.crop({
+      x: cropX,
+      y: cropY,
+      width: minDim,
+      height: minDim,
+    });
+    const resized = cropped.resize({
+      width: 128,
+      height: 128,
+      quality: "better",
+    });
+    const dataUrl = resized.toDataURL();
+
+    return { ok: true, avatar: dataUrl };
+  } catch (err) {
+    return {
+      ok: false,
+      error: `Erro ao processar imagem: ${err.message || String(err)}`,
+    };
+  }
+}
+
+function reloadSessionTab(desktopId) {
+  const targetId = desktopId || activeSessionId || "zappr";
+  const view = sessionViews.get(targetId);
+  if (view && view.webContents && !view.webContents.isDestroyed()) {
+    view.webContents.reload();
+    return true;
+  }
+  return false;
+}
+
 module.exports = {
   createMainWindow,
   getMainWindow,
   getWhatsAppContents,
   switchSessionTab,
   removeSessionTab,
+  reloadSessionTab,
   getActiveSessionId,
   updateLayout,
   setAudioMutedForSession,
@@ -834,4 +1079,5 @@ module.exports = {
   sessionUnreadCounts,
   broadcastUnreadCount,
   applyVolumeToWebContents,
+  extractSessionWhatsAppPhoto,
 };

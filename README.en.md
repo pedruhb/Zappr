@@ -14,9 +14,12 @@ Modern, high-performance desktop client for WhatsApp Web built with Electron for
 
 ### 👥 Multiple Isolated Sessions in Tabs
 
-- **Discord-style right sidebar**: Manage up to 6 WhatsApp accounts seamlessly within a single sleek window.
+- **Discord-style sidebar**: Manage up to 6 WhatsApp accounts seamlessly within a single sleek window.
 - **Complete session isolation**: Each tab runs inside an isolated Electron partition (`persist:partition`), keeping session data, logins, and cookies 100% segregated.
 - **Drag & Drop reordering**: Easily reorganize sessions by dragging icons up and down with instant green drop indicators and fluid animations.
+- **WhatsApp Profile Photo Sync**: Automatically pull and apply your official WhatsApp profile picture with a single click in the session editor or directly from the right-click context menu.
+- **Status Indicator (Waiting for QR Code)**: An amber pulsing badge appears on any account that is disconnected or awaiting QR code scanning.
+- **Reload Individual Session**: Reload a single tab via right-click context menu without reloading the entire app.
 - **Fast visual identification**: Set custom profile photos (with automatic square crop and WebP compression) or dynamic high-contrast initials.
 - **Instant tab switching**: Fluid tab switching powered by Electron's `WebContentsView`, keeping memory usage low while preserving background chat connections.
 
@@ -25,6 +28,11 @@ Modern, high-performance desktop client for WhatsApp Web built with Electron for
 - **Per-session unread counter**: Each sidebar icon displays a badge reflecting unread conversation counts directly extracted from WhatsApp Web.
 - **Bounce animation**: Smooth pop animation whenever new messages arrive to catch your attention discreetly.
 - **Global dock/taskbar synchronization**: Synchronized with your OS taskbar and dock badge count.
+
+### 💾 Backup & Settings Restoration
+
+- **One-click Export & Import**: Save all your sessions, names, custom avatars, colors, and link distribution preferences to a portable `.json` file via **Settings > Export/Import**.
+- **Effortless Migration**: Quickly transfer your configured accounts and settings to another computer or restore backups anytime.
 
 ### 🔀 Smart Link Routing (`whatsapp://` & `wa.me`)
 
@@ -52,6 +60,10 @@ Modern, high-performance desktop client for WhatsApp Web built with Electron for
 
 - Zappr defaults to **Português do Brasil (`pt-BR`)**, with full support for **English (`en`)** and **Spanish (`es`)**.
 - Switch language anytime via **File > Language** without restarting the application.
+
+### 🔄 Automatic Updates & About Modal
+
+- **Integrated Update Checker**: Check for updates directly inside the About window with download progress bar and release notes via GitHub Releases.
 
 ---
 

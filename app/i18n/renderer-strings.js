@@ -110,6 +110,13 @@ window.ZAPPR_STRINGS = {
       saveBtn: "Guardar cambios",
       deleteBtn: "Eliminar",
       emptyNameError: "Por favor, escribí un nombre para la sesión.",
+      syncWhatsAppPhoto: "Sincronizar foto de WhatsApp",
+      syncWhatsAppPhotoDesc:
+        "Obtiene y aplica automáticamente la foto de tu perfil",
+      syncingPhoto: "Buscando foto de WhatsApp...",
+      syncPhotoSuccess: "¡Foto de WhatsApp sincronizada!",
+      syncPhotoError:
+        "No se pudo encontrar la foto en WhatsApp Web. Verificá que estés conectado.",
     },
     deleteModal: {
       title: "Eliminar Sesión",
@@ -242,6 +249,13 @@ window.ZAPPR_STRINGS = {
       saveBtn: "Save changes",
       deleteBtn: "Delete",
       emptyNameError: "Please provide a name for the session.",
+      syncWhatsAppPhoto: "Sync WhatsApp photo",
+      syncWhatsAppPhotoDesc:
+        "Automatically pulls and applies your WhatsApp profile photo",
+      syncingPhoto: "Fetching WhatsApp photo...",
+      syncPhotoSuccess: "WhatsApp photo synchronized!",
+      syncPhotoError:
+        "Could not find profile photo on WhatsApp Web. Make sure you are logged in.",
     },
     deleteModal: {
       title: "Delete Session",
@@ -374,6 +388,13 @@ window.ZAPPR_STRINGS = {
       saveBtn: "Salvar alterações",
       deleteBtn: "Excluir",
       emptyNameError: "Por favor, informe o nome da sessão.",
+      syncWhatsAppPhoto: "Sincronizar foto do WhatsApp",
+      syncWhatsAppPhotoDesc:
+        "Puxa e aplica automaticamente a foto do seu perfil",
+      syncingPhoto: "Buscando foto do WhatsApp...",
+      syncPhotoSuccess: "Foto do WhatsApp sincronizada!",
+      syncPhotoError:
+        "Não foi possível encontrar a foto no WhatsApp Web. Verifique se você está conectado.",
     },
     deleteModal: {
       title: "Excluir Sessão",

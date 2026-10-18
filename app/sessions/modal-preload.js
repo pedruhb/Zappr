@@ -9,6 +9,8 @@ contextBridge.exposeInMainWorld("modalAPI", {
   delete: (desktopId) => ipcRenderer.invoke("sessions:delete", desktopId),
   openDelete: (desktopId) =>
     ipcRenderer.invoke("sessions:open-delete", desktopId),
+  fetchWhatsAppPhoto: (desktopId) =>
+    ipcRenderer.invoke("sessions:fetch-whatsapp-photo", desktopId),
   resize: (height) => ipcRenderer.send("sessions:modal-resize", height),
   close: () => ipcRenderer.send("sessions:modal-close"),
 });

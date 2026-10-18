@@ -226,6 +226,127 @@
         color: var(--text-secondary);
       }
 
+      /* Sync WhatsApp Photo Card */
+      .sync-photo-card {
+        background: var(--input-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        transition: border-color 0.15s;
+      }
+
+      .sync-photo-card:hover {
+        border-color: #3b4a54;
+      }
+
+      .sync-photo-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+        flex: 1;
+      }
+
+      .sync-photo-icon-box {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: rgba(0, 168, 132, 0.12);
+        color: var(--whatsapp-green);
+        border: 1px solid rgba(0, 168, 132, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .sync-photo-icon-box.spinning svg {
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .sync-photo-text {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+      }
+
+      .sync-photo-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+        line-height: 1.2;
+      }
+
+      .sync-photo-desc {
+        font-size: 11.5px;
+        color: var(--text-secondary);
+        line-height: 1.3;
+      }
+
+      /* Modern Toggle Switch */
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 22px;
+        flex-shrink: 0;
+        cursor: pointer;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+        position: absolute;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        inset: 0;
+        background-color: #3b4a54;
+        transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 22px;
+      }
+
+      .slider::before {
+        position: absolute;
+        content: "";
+        height: 16px;
+        width: 16px;
+        left: 3px;
+        bottom: 3px;
+        background-color: #ffffff;
+        transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 50%;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      }
+
+      .switch input:checked + .slider {
+        background-color: var(--whatsapp-green);
+      }
+
+      .switch input:focus-visible + .slider {
+        outline: 2px solid var(--whatsapp-green);
+        outline-offset: 2px;
+      }
+
+      .switch input:checked + .slider::before {
+        transform: translateX(18px);
+        background-color: #111b21;
+      }
+
       /* Form Field */
       .form-group {
         display: flex;
@@ -493,6 +614,40 @@
               >JPG, PNG ou WebP. Corte quadrado 128x128.</span
             >
           </div>
+        </div>
+
+        <!-- Sync WhatsApp Photo Switch Card -->
+        <div class="sync-photo-card" id="sync-photo-card" hidden>
+          <div class="sync-photo-left">
+            <div class="sync-photo-icon-box" id="sync-photo-icon-box">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"
+                ></path>
+              </svg>
+            </div>
+            <div class="sync-photo-text">
+              <span class="sync-photo-title" id="sync-photo-title"
+                >Sincronizar foto do WhatsApp</span
+              >
+              <span class="sync-photo-desc" id="sync-photo-desc"
+                >Puxa e aplica automaticamente a foto do seu perfil</span
+              >
+            </div>
+          </div>
+          <label class="switch" title="Sincronizar foto do WhatsApp">
+            <input type="checkbox" id="sync-photo-switch" />
+            <span class="slider"></span>
+          </label>
         </div>
 
         <!-- Name input -->
