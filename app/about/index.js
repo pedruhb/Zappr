@@ -50,8 +50,8 @@ function openAboutModal(parentWin) {
     x: pX,
     y: pY,
   } = parent.getContentBounds();
-  const mWidth = 430;
-  const mHeight = 360;
+  const mWidth = 460;
+  const mHeight = 440;
   const mX = Math.round(pX + (pWidth - mWidth) / 2);
   const mY = Math.round(pY + (pHeight - mHeight) / 2);
 

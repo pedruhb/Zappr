@@ -1,6 +1,6 @@
 {
   "name": "zappr",
-  "version": "0.0.1",
+  "version": "0.2.8",
   "description": "Cliente desktop moderno para WhatsApp Web (Electron), com suporte a múltiplas sessões isoladas, distribuição inteligente de links e controle de áudio individual.",
   "main": "app/index.js",
   "desktopName": "zappr.desktop",
@@ -45,6 +45,21 @@
       "category": "Network",
       "icon": "build/icon.png",
       "syncDesktopName": true
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "zip"
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "allowElevation": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Zappr"
     },
     "toolsets": {
       "appimage": "1.0.3"

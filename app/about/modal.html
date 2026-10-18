@@ -1,363 +1,704 @@
 <!doctype html>
 <html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sobre o Zappr</title>
+    <style>
+      :root {
+        --bg: #202c33;
+        --card-bg: #202c33;
+        --input-bg: #111b21;
+        --border: #2a3942;
+        --border-hover: #3b4a54;
+        --whatsapp-green: #00a884;
+        --whatsapp-green-hover: #06cf9c;
+        --text-primary: #e9edef;
+        --text-secondary: #8696a0;
+        --accent-blue: #53bdeb;
+      }
 
-<head>
-  <meta charset="utf-8" />
-  <title>Sobre o Zappr</title>
-  <style>
-    :root {
-      --bg: #202c33;
-      --card-bg: #202c33;
-      --input-bg: #111b21;
-      --border: #2a3942;
-      --whatsapp-green: #00a884;
-      --whatsapp-green-hover: #06cf9c;
-      --text-primary: #e9edef;
-      --text-secondary: #8696a0;
-    }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
 
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-    }
+      [hidden] {
+        display: none !important;
+      }
 
-    [hidden] {
-      display: none !important;
-    }
+      /* Modern WhatsApp custom scrollbar */
+      * {
+        scrollbar-width: thin;
+        scrollbar-color: #3b4a54 transparent;
+      }
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #3b4a54;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #536471;
+      }
 
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background: var(--bg);
-      color: var(--text-primary);
-      font:
-        13px system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Helvetica,
-        Arial,
-        sans-serif;
-      user-select: none;
-      overflow: hidden;
-      border-radius: 12px;
-    }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: var(--bg);
+        color: var(--text-primary);
+        font:
+          13px system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        user-select: none;
+        overflow: hidden;
+        border-radius: 12px;
+      }
 
-    .modal-card {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-    }
+      .modal-card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
 
-    .modal-header {
-      padding: 14px 18px 12px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      -webkit-app-region: drag;
-    }
+      .modal-header {
+        padding: 14px 18px 12px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        -webkit-app-region: drag;
+      }
 
-    .modal-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin: 0;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+      .modal-title-group {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
 
-    .modal-title-icon {
-      color: var(--whatsapp-green);
-      display: flex;
-      align-items: center;
-    }
+      .modal-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
 
-    .modal-close-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-secondary);
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      -webkit-app-region: no-drag;
-      transition:
-        background-color 0.15s,
-        color 0.15s;
-    }
+      .modal-title-icon {
+        color: var(--whatsapp-green);
+        display: flex;
+        align-items: center;
+      }
 
-    .modal-close-btn:hover {
-      background: #2a3942;
-      color: var(--text-primary);
-    }
+      .modal-subtitle {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin: 0;
+      }
 
-    .modal-body {
-      padding: 16px 18px 18px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      overflow: hidden;
-    }
+      .modal-close-btn {
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        -webkit-app-region: no-drag;
+        transition:
+          background-color 0.15s,
+          color 0.15s;
+      }
 
-    .hero-section {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
+      .modal-close-btn:hover {
+        background: #2a3942;
+        color: var(--text-primary);
+      }
 
-    .app-logo {
-      width: 52px;
-      height: 52px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      overflow: hidden;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-    }
+      .modal-body {
+        padding: 14px 18px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        overflow-y: auto;
+      }
 
-    .app-logo-img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      border-radius: 12px;
-      user-select: none;
-      -webkit-user-drag: none;
-    }
+      /* Hero Card */
+      .hero-card {
+        background: var(--input-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
 
-    .app-title-group {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
+      .app-logo {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      }
 
-    .app-title-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+      .app-logo-img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 12px;
+        user-select: none;
+        -webkit-user-drag: none;
+      }
 
-    .app-name {
-      font-size: 17px;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
+      .hero-content {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        flex: 1;
+        min-width: 0;
+      }
 
-    .version-tag {
-      font-size: 11px;
-      font-weight: 600;
-      background: rgba(0, 168, 132, 0.15);
-      color: var(--whatsapp-green);
-      border: 1px solid rgba(0, 168, 132, 0.35);
-      border-radius: 12px;
-      padding: 1px 7px;
-    }
+      .hero-header-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
 
-    .app-desc {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin: 0;
-      line-height: 1.35;
-    }
+      .app-name {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-primary);
+        letter-spacing: -0.2px;
+      }
 
-    .info-card {
-      background: var(--input-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 14px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px 16px;
-    }
+      .version-tag {
+        font-size: 11px;
+        font-weight: 600;
+        background: rgba(0, 168, 132, 0.15);
+        color: var(--whatsapp-green);
+        border: 1px solid rgba(0, 168, 132, 0.35);
+        border-radius: 10px;
+        padding: 1px 7px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
+      }
 
-    .info-item {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-    }
+      .app-desc {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin: 0;
+        line-height: 1.35;
+      }
 
-    .info-label {
-      font-size: 11px;
-      color: var(--text-secondary);
-      font-weight: 500;
-    }
+      /* Runtime Specs Grid */
+      .info-card {
+        background: var(--input-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 14px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 16px;
+      }
 
-    .info-value {
-      font-size: 12px;
-      color: var(--text-primary);
-      font-weight: 600;
-      font-family:
-        ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    }
+      .info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
 
-    .repo-button {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--input-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 9px 14px;
-      color: var(--text-primary);
-      cursor: pointer;
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 500;
-      transition:
-        background-color 0.15s,
-        border-color 0.15s;
-    }
+      .info-label {
+        font-size: 11px;
+        color: var(--text-secondary);
+        font-weight: 500;
+      }
 
-    .repo-button:hover {
-      background: #2a3942;
-      border-color: #3b4a54;
-    }
+      .info-value {
+        font-size: 12px;
+        color: var(--text-primary);
+        font-weight: 600;
+        font-family:
+          ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      }
 
-    .repo-left {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+      /* Updater Card */
+      .updater-card {
+        background: var(--input-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
 
-    .repo-left svg {
-      color: var(--text-secondary);
-    }
+      .updater-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 0;
+        flex: 1;
+      }
 
-    .repo-button:hover .repo-left svg {
-      color: var(--text-primary);
-    }
+      .updater-icon-wrap {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: rgba(0, 168, 132, 0.14);
+        color: var(--whatsapp-green);
+        border: 1px solid rgba(0, 168, 132, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
 
-    .repo-arrow {
-      color: var(--text-secondary);
-    }
+      .updater-icon-wrap.checking {
+        background: rgba(83, 189, 235, 0.14);
+        color: var(--accent-blue);
+        border-color: rgba(83, 189, 235, 0.3);
+      }
 
-    .modal-footer {
-      padding: 12px 18px;
-      background: #182229;
-      border-top: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-    }
+      .updater-icon-wrap.checking svg {
+        animation: spin 1s linear infinite;
+      }
 
-    .btn-primary {
-      background: var(--whatsapp-green);
-      color: #111b21;
-      border: none;
-      border-radius: 8px;
-      padding: 8px 18px;
-      font-size: 13px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0, 168, 132, 0.3);
-      transition:
-        background-color 0.15s,
-        transform 0.1s;
-    }
+      @keyframes spin {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
 
-    .btn-primary:hover {
-      background: var(--whatsapp-green-hover);
-      transform: translateY(-1px);
-    }
-  </style>
-</head>
+      .updater-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+      }
 
-<body>
-  <div class="modal-card">
-    <div class="modal-header">
-      <h2 id="about-title" class="modal-title">
-        <span class="modal-title-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="16" x2="12" y2="12"></line>
-            <line x1="12" y1="8" x2="12.01" y2="8"></line>
-          </svg>
-        </span>
-        <span id="about-title-text">Sobre o Zappr</span>
-      </h2>
-      <button type="button" id="close-x-btn" class="modal-close-btn" aria-label="Fechar">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-          stroke-linecap="round">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
-      </button>
-    </div>
+      .updater-status-text {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
 
-    <div class="modal-body">
-      <div class="hero-section">
-        <div class="app-logo">
-          <img src="../../build/icon.png" alt="Zappr" class="app-logo-img" />
-        </div>
-        <div class="app-title-group">
-          <div class="app-title-row">
-            <span class="app-name">Zappr</span>
-            <span id="app-version" class="version-tag">...</span>
-          </div>
-          <p id="app-desc" class="app-desc">
-            Cliente desktop para WhatsApp Web com suporte a múltiplas sessões
-            isoladas.
+      .updater-subtext {
+        font-size: 11px;
+        color: var(--text-secondary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .btn-check-updates {
+        background: #2a3942;
+        color: var(--text-primary);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 6px 12px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+        transition:
+          background-color 0.15s,
+          border-color 0.15s;
+      }
+
+      .btn-check-updates:hover {
+        background: #3b4a54;
+        border-color: #4a5c68;
+      }
+
+      .btn-check-updates:disabled {
+        opacity: 0.6;
+        cursor: default;
+      }
+
+      /* Links Row */
+      .links-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .link-card-btn {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--input-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 12px;
+        color: var(--text-primary);
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 500;
+        transition:
+          background-color 0.15s,
+          border-color 0.15s;
+      }
+
+      .link-card-btn:hover {
+        background: #2a3942;
+        border-color: var(--border-hover);
+      }
+
+      .link-card-left {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+
+      .link-card-left svg {
+        color: var(--text-secondary);
+        flex-shrink: 0;
+      }
+
+      .link-card-btn:hover .link-card-left svg {
+        color: var(--text-primary);
+      }
+
+      .external-arrow {
+        color: var(--text-secondary);
+        flex-shrink: 0;
+      }
+
+      /* Footer */
+      .modal-footer {
+        padding: 12px 18px;
+        background: #182229;
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .btn-secondary {
+        background: transparent;
+        color: var(--text-primary);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-size: 12.5px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition:
+          background-color 0.15s,
+          border-color 0.15s;
+      }
+
+      .btn-secondary:hover {
+        background: #2a3942;
+        border-color: #3b4a54;
+      }
+
+      .btn-secondary:disabled {
+        opacity: 0.6;
+        cursor: default;
+      }
+
+      .btn-secondary svg.spin,
+      .btn-check-updates svg.spin {
+        animation: spin 1s linear infinite;
+      }
+
+      .btn-primary {
+        background: var(--whatsapp-green);
+        color: #111b21;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 168, 132, 0.3);
+        transition:
+          background-color 0.15s,
+          transform 0.1s,
+          box-shadow 0.15s;
+      }
+
+      .btn-primary:hover {
+        background: var(--whatsapp-green-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(0, 168, 132, 0.4);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <h2 id="about-title" class="modal-title">
+            <span class="modal-title-icon">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+              >
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+            </span>
+            <span id="about-title-text">Sobre o Zappr</span>
+          </h2>
+          <p class="modal-subtitle" id="about-subtitle-text">
+            Informações do aplicativo e atualizações
           </p>
         </div>
-      </div>
-
-      <div class="info-card">
-        <div class="info-item">
-          <span class="info-label">Electron</span>
-          <span id="electron-ver" class="info-value">-</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Chromium</span>
-          <span id="chrome-ver" class="info-value">-</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Node.js</span>
-          <span id="node-ver" class="info-value">-</span>
-        </div>
-        <div class="info-item">
-          <span id="platform-label" class="info-label">Plataforma</span>
-          <span id="platform-ver" class="info-value">-</span>
-        </div>
-      </div>
-
-      <button type="button" id="repo-btn" class="repo-button">
-        <span class="repo-left">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-            <path fill-rule="evenodd" clip-rule="evenodd"
-              d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+        <button
+          type="button"
+          id="close-x-btn"
+          class="modal-close-btn"
+          aria-label="Fechar"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
-          <span id="repo-label">Repositório do projeto</span>
-        </span>
-        <svg class="repo-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2">
-          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-          <polyline points="15 3 21 3 21 9"></polyline>
-          <line x1="10" y1="14" x2="21" y2="3"></line>
-        </svg>
-      </button>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Hero Card -->
+        <div class="hero-card">
+          <div class="app-logo">
+            <img src="../../build/icon.png" alt="Zappr" class="app-logo-img" />
+          </div>
+          <div class="hero-content">
+            <div class="hero-header-row">
+              <span class="app-name">Zappr</span>
+              <span id="app-version" class="version-tag">...</span>
+            </div>
+            <p id="app-desc" class="app-desc">
+              Cliente desktop para WhatsApp Web com suporte a múltiplas sessões
+              isoladas.
+            </p>
+          </div>
+        </div>
+
+        <!-- Runtime Specs Card -->
+        <div class="info-card">
+          <div class="info-item">
+            <span class="info-label">Electron</span>
+            <span id="electron-ver" class="info-value">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Chromium</span>
+            <span id="chrome-ver" class="info-value">-</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Node.js</span>
+            <span id="node-ver" class="info-value">-</span>
+          </div>
+          <div class="info-item">
+            <span id="platform-label" class="info-label">Plataforma</span>
+            <span id="platform-ver" class="info-value">-</span>
+          </div>
+        </div>
+
+        <!-- Updater Card -->
+        <div class="updater-card">
+          <div class="updater-left">
+            <div class="updater-icon-wrap" id="updater-icon-wrap">
+              <svg
+                id="status-icon"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <div class="updater-info">
+              <span id="updater-status-text" class="updater-status-text"
+                >Versão mais recente instalada</span
+              >
+              <span id="updater-subtext" class="updater-subtext"
+                >Verificação automática via GitHub Releases</span
+              >
+            </div>
+          </div>
+          <button
+            type="button"
+            id="check-updates-btn"
+            class="btn-check-updates"
+          >
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"
+              ></path>
+            </svg>
+            <span id="check-updates-label">Verificar atualizações</span>
+          </button>
+        </div>
+
+        <!-- Links Row -->
+        <div class="links-row">
+          <button type="button" id="repo-btn" class="link-card-btn">
+            <span class="link-card-left">
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                ></path>
+              </svg>
+              <span id="repo-label">Repositório no GitHub</span>
+            </span>
+            <svg
+              class="external-arrow"
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+              ></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </button>
+          <button type="button" id="releases-btn" class="link-card-btn">
+            <span class="link-card-left">
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                <path d="M4 22h16"></path>
+                <path
+                  d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"
+                ></path>
+                <path
+                  d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"
+                ></path>
+                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+              </svg>
+              <span id="releases-label">Ver lançamentos</span>
+            </span>
+            <svg
+              class="external-arrow"
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+              ></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="footer-check-btn" class="btn-secondary">
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"
+            ></path>
+          </svg>
+          <span id="footer-check-label">Verificar atualizações</span>
+        </button>
+        <button type="button" id="close-btn" class="btn-primary">Fechar</button>
+      </div>
     </div>
 
-    <div class="modal-footer">
-      <button type="button" id="close-btn" class="btn-primary">Fechar</button>
-    </div>
-  </div>
-
-  <script src="../i18n/renderer-strings.js"></script>
-  <script src="modal.js"></script>
-</body>
-
+    <script src="../i18n/renderer-strings.js"></script>
+    <script src="modal.js"></script>
+  </body>
 </html>

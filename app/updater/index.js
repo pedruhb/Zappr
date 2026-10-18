@@ -101,20 +101,138 @@ function persistPendingUpdate(info) {
   }
 }
 
+function isSupportedEnvironment() {
+  if (process.platform === "win32") return true;
+  if (process.platform === "linux") return isAppImage();
+  return false;
+}
+
+let currentStatus = { state: "idle", version: null };
+
+function broadcastStatus() {
+  for (const win of BrowserWindow.getAllWindows()) {
+    if (!win.isDestroyed()) {
+      try {
+        win.webContents.send("updater:status", currentStatus);
+      } catch {
+        // Window may be closing
+      }
+    }
+  }
+}
+
+const { ipcMain } = require("electron");
+
+ipcMain.handle("updater:get-status", () => currentStatus);
+
+ipcMain.handle("updater:check-for-updates", async () => {
+  try {
+    if (!app.isPackaged) {
+      currentStatus = {
+        state: "dev",
+        version: app.getVersion(),
+        message: "Modo de desenvolvimento",
+      };
+      broadcastStatus();
+      return { success: true, status: currentStatus };
+    }
+    if (!isSupportedEnvironment()) {
+      currentStatus = {
+        state: "unsupported",
+        version: app.getVersion(),
+        message: "Atualizações automáticas não suportadas neste pacote",
+      };
+      broadcastStatus();
+      return { success: true, status: currentStatus };
+    }
+    currentStatus = { state: "checking" };
+    broadcastStatus();
+    const result = await autoUpdater.checkForUpdates();
+    return { success: true, updateInfo: result?.updateInfo };
+  } catch (err) {
+    currentStatus = {
+      state: "error",
+      message: err && err.message ? err.message : String(err),
+    };
+    broadcastStatus();
+    return { success: false, error: currentStatus.message };
+  }
+});
+
+ipcMain.handle("updater:install-now", () => {
+  if (currentStatus.state === "downloaded") {
+    autoUpdater.quitAndInstall();
+    return true;
+  }
+  return false;
+});
+
 const CHECK_INTERVAL_MS = 4 * 60 * 60 * 1000;
 
 function startBackgroundChecks() {
+  try {
+    autoUpdater.setFeedURL({
+      provider: "github",
+      owner: "pedruhb",
+      repo: "Zappr",
+    });
+  } catch (err) {
+    console.error("Zappr updater feed config error:", err);
+  }
+
   autoUpdater.autoDownload = true;
   // Installs quietly the next time the app actually quits (tray "Salir" /
   // menu "Salir" / OS logout) — never interrupts an open chat window with
   // a forced restart.
   autoUpdater.autoInstallOnAppQuit = true;
 
-  autoUpdater.on("update-downloaded", persistPendingUpdate);
+  autoUpdater.on("checking-for-update", () => {
+    currentStatus = { state: "checking" };
+    broadcastStatus();
+  });
+
+  autoUpdater.on("update-available", (info) => {
+    currentStatus = {
+      state: "available",
+      version: info.version,
+    };
+    broadcastStatus();
+  });
+
+  autoUpdater.on("update-not-available", () => {
+    currentStatus = {
+      state: "latest",
+      version: app.getVersion(),
+    };
+    broadcastStatus();
+  });
+
+  autoUpdater.on("download-progress", (progress) => {
+    currentStatus = {
+      state: "downloading",
+      percent: Math.round(progress.percent || 0),
+    };
+    broadcastStatus();
+  });
+
+  autoUpdater.on("update-downloaded", (info) => {
+    currentStatus = {
+      state: "downloaded",
+      version: info.version,
+    };
+    persistPendingUpdate(info);
+    broadcastStatus();
+  });
+
   // Update checks are best-effort background noise: no network, GitHub
   // hiccup, or rate limit should ever surface to the user.
   autoUpdater.on("error", (err) => {
     console.error("Zappr updater:", err && err.message ? err.message : err);
+    currentStatus = {
+      state: "error",
+      message: err && err.message ? err.message : String(err),
+    };
+    broadcastStatus();
   });
 
   const check = () => autoUpdater.checkForUpdates().catch(() => {});
@@ -127,7 +245,8 @@ function startBackgroundChecks() {
 // installed binary — running the updater in each of them would mean up to
 // MAX_SESSIONS redundant downloads racing to write the same AppImage file.
 function initUpdater(config) {
-  if (!app.isPackaged || !isAppImage() || config.profileName !== "") return;
+  if (!app.isPackaged || !isSupportedEnvironment() || config.profileName !== "")
+    return;
 
   showChangelogIfJustUpdated();
   startBackgroundChecks();

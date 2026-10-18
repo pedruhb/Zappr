@@ -302,11 +302,11 @@ function removeTintedIcons(desktopId) {
 
 function refreshDesktopCaches() {
   if (process.platform !== "linux") return;
-  execFile("update-desktop-database", [APPLICATIONS_DIR], () => { });
+  execFile("update-desktop-database", [APPLICATIONS_DIR], () => {});
   execFile(
     "gtk-update-icon-cache",
     ["-f", "-t", path.join(HOME, ".local", "share", "icons", "hicolor")],
-    () => { },
+    () => {},
   );
 }
 
