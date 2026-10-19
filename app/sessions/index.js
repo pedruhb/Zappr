@@ -21,8 +21,8 @@ const {
 } = require("./modal-manager");
 const { t } = require("../i18n");
 
-// Each extra session tab runs an isolated partition
-const MAX_SESSIONS = 6;
+// Each extra session tab runs an isolated partition (unlimited sessions)
+const MAX_SESSIONS = Infinity;
 
 // Mirrors WhatsApp's own group-name limit
 const MAX_NAME_LENGTH = 25;
@@ -341,12 +341,6 @@ function createSession(rawInput, rawAvatar) {
   const existing = listSessionSlugs();
   if (existing.includes(slug)) {
     return { ok: false, error: t("sessions.errors.duplicate", profileName) };
-  }
-  if (existing.length >= MAX_SESSIONS) {
-    return {
-      ok: false,
-      error: t("sessions.errors.limitReached", MAX_SESSIONS),
-    };
   }
 
   const desktopId = `zappr-${slug}`;

@@ -53,7 +53,6 @@ const nodeVerEl = document.getElementById("node-ver");
 const platformVerEl = document.getElementById("platform-ver");
 const repoBtn = document.getElementById("repo-btn");
 const releasesBtn = document.getElementById("releases-btn");
-const checkUpdatesBtn = document.getElementById("check-updates-btn");
 const updaterIconWrapEl = document.getElementById("updater-icon-wrap");
 const updaterStatusTextEl = document.getElementById("updater-status-text");
 const updaterSubtextEl = document.getElementById("updater-subtext");
@@ -65,10 +64,6 @@ const footerCheckLabelEl = document.getElementById("footer-check-label");
 let currentUpdateState = null;
 
 function setButtonsState(disabled, text) {
-  if (checkUpdatesBtn) {
-    checkUpdatesBtn.disabled = disabled;
-    if (checkUpdatesLabelEl && text) checkUpdatesLabelEl.textContent = text;
-  }
   if (footerCheckBtn) {
     footerCheckBtn.disabled = disabled;
     if (footerCheckLabelEl && text) footerCheckLabelEl.textContent = text;
@@ -232,9 +227,6 @@ async function handleCheckUpdates() {
   }
 }
 
-if (checkUpdatesBtn) {
-  checkUpdatesBtn.addEventListener("click", handleCheckUpdates);
-}
 if (footerCheckBtn) {
   footerCheckBtn.addEventListener("click", handleCheckUpdates);
 }

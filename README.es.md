@@ -6,7 +6,11 @@
 
 [Português (Brasil)](README.md) · [English](README.en.md) · **Español**
 
-Cliente de escritorio moderno y de alto rendimiento para WhatsApp Web construido con Electron para **Linux** y **Windows**, con soporte nativo de llamadas de voz y video, compartir pantalla, múltiples cuentas aisladas en pestañas con barra lateral estilo Discord, distribución inteligente de enlaces `whatsapp://`, control granular de audio por sesión y distintivos de mensajes no leídos en tiempo real.
+Cliente de escritorio moderno y de alto rendimiento para WhatsApp Web construido con Electron para **Linux** e **Windows**, con soporte nativo de llamadas de voz y video, compartir pantalla, múltiples cuentas aisladas en pestañas con barra lateral estilo Discord, distribución inteligente de enlaces `whatsapp://`, control granular de audio por sesión y distintivos de mensajes no leídos en tiempo real.
+
+<p align="center">
+  <img src="docs/screenshots/whatsapp-qrcode.png" alt="Zappr Interfaz Principal" width="850">
+</p>
 
 ---
 
@@ -14,7 +18,7 @@ Cliente de escritorio moderno y de alto rendimiento para WhatsApp Web construido
 
 ### 👥 Múltiples Sesiones Aisladas en Pestañas
 
-- **Barra lateral estilo Discord**: Administrá hasta 6 cuentas de WhatsApp simultáneamente en una sola ventana elegante.
+- **Barra lateral estilo Discord**: Administrá cuentas ilimitadas de WhatsApp simultáneamente en una sola ventana elegante.
 - **Aislamiento total de sesión**: Cada pestaña opera dentro de una partición aislada de Electron (`persist:partition`), manteniendo datos, logins y cookies 100% independientes y seguros.
 - **Reorganización por Arrastar y Soltar (Drag & Drop)**: Reordená fácilmente tus cuentas en la barra lateral arrastrando los íconos hacia arriba o abajo con indicador visual verde y animación fluida.
 - **Sincronización de Foto de Perfil de WhatsApp**: Obtené y aplicá automáticamente la foto oficial de tu perfil de WhatsApp con un solo clic en el editor de sesión o directamente desde el menú contextual de clic derecho.
@@ -72,18 +76,30 @@ Cliente de escritorio moderno y de alto rendimiento para WhatsApp Web construido
 
 ---
 
+## 📸 Capturas de Pantalla
+
+|                            Interfaz Principal y Múltiples Cuentas                             |                           Edición de Sesión y Foto de WhatsApp                           |
+| :-------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------: |
+|     <img src="docs/screenshots/whatsapp-qrcode.png" alt="Interfaz Principal" width="420">     |      <img src="docs/screenshots/edit-session.png" alt="Editar Sesión" width="420">       |
+|                          **Control Granular de Volumen por Sesión**                           |                     **Personalización de Colores y Barra Dinámica**                      |
+| <img src="docs/screenshots/session-settings-volume.png" alt="Control de Volumen" width="420"> | <img src="docs/screenshots/edit-session-color.png" alt="Color de la Sesión" width="420"> |
+|                     **Distribución Inteligente de Enlaces (whatsapp://)**                     |                   **Acerca de Zappr y Verificador de Actualizaciones**                   |
+|     <img src="docs/screenshots/whatsapp-link.png" alt="Enlaces de WhatsApp" width="420">      |       <img src="docs/screenshots/app-about.png" alt="Acerca de Zappr" width="420">       |
+
+---
+
 ## ⌨️ Atajos de Teclado
 
 | Atajo                             | Acción                                                           |
 | :-------------------------------- | :--------------------------------------------------------------- |
-| `Ctrl + 1` a `Ctrl + 6`           | Cambiar directamente a la sesión correspondiente                 |
+| `Ctrl + 1` a `Ctrl + 9`           | Cambiar directamente a la sesión correspondiente                 |
 | `Ctrl + N`                        | Añadir una nueva sesión de WhatsApp                              |
 | `Ctrl + R` / `F5`                 | Recargar la sesión activa                                        |
 | `Ctrl + Shift + R`                | Forzar recarga de la sesión activa (limpia caché de renderizado) |
 | `Ctrl + +` / `Ctrl + -`           | Aumentar o disminuir zoom                                        |
 | `Ctrl + 0`                        | Restaurar zoom predeterminado (100%)                             |
 | `F11`                             | Alternar pantalla completa                                       |
-| `1` a `6` _(en modal de enlaces)_ | Elegir sesión para abrir el enlace                               |
+| `1` a `9` _(en modal de enlaces)_ | Elegir sesión para abrir el enlace                               |
 | `Enter` _(en modal de enlaces)_   | Abrir enlace en la sesión seleccionada                           |
 | `Esc`                             | Cerrar modales y diálogos                                        |
 

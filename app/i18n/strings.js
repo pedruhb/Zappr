@@ -40,6 +40,7 @@ const es = {
     about: "Acerca de",
     repository: "Repositorio",
     aboutApp: "Acerca de Zappr",
+    whatsNew: "Novedades...",
   },
   tray: {
     show: "Mostrar",
@@ -109,6 +110,7 @@ const en = {
     about: "About",
     repository: "Repository",
     aboutApp: "About Zappr",
+    whatsNew: "What's New...",
   },
   tray: {
     show: "Show",
@@ -178,6 +180,7 @@ const pt = {
     about: "Sobre",
     repository: "Repositório",
     aboutApp: "Sobre o Zappr",
+    whatsNew: "Novidades...",
   },
   tray: {
     show: "Exibir",

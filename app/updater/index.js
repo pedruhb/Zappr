@@ -2,7 +2,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain, shell } = require("electron");
 const { autoUpdater } = require("electron-updater");
 const { currentLocale } = require("../i18n");
 
@@ -32,31 +32,87 @@ function normalizeReleaseNotes(releaseNotes) {
     .join("\n\n");
 }
 
-function openChangelogWindow({ version, releaseName, releaseNotes }) {
-  const win = new BrowserWindow({
-    width: 480,
-    height: 520,
-    resizable: true,
-    minimizable: true,
+let changelogWin = null;
+
+function openChangelogWindow(notesData = {}) {
+  const version = notesData.version || app.getVersion();
+  const releaseName = notesData.releaseName || `Zappr v${version}`;
+  const releaseNotes = notesData.releaseNotes || "";
+
+  if (changelogWin && !changelogWin.isDestroyed()) {
+    changelogWin.focus();
+    return changelogWin;
+  }
+
+  const parent = BrowserWindow.getAllWindows().find(
+    (w) => !w.isDestroyed() && w.isVisible(),
+  );
+
+  let mX, mY;
+  const mWidth = 480;
+  const mHeight = 530;
+  if (parent) {
+    const {
+      width: pWidth,
+      height: pHeight,
+      x: pX,
+      y: pY,
+    } = parent.getContentBounds();
+    mX = Math.round(pX + (pWidth - mWidth) / 2);
+    mY = Math.round(pY + (pHeight - mHeight) / 2);
+  }
+
+  changelogWin = new BrowserWindow({
+    width: mWidth,
+    height: mHeight,
+    ...(mX !== undefined && mY !== undefined ? { x: mX, y: mY } : {}),
+    parent: parent || undefined,
+    modal: Boolean(parent),
+    frame: false,
+    resizable: false,
+    movable: true,
+    minimizable: false,
     maximizable: false,
+    backgroundColor: "#202c33",
+    hasShadow: true,
+    show: false,
     webPreferences: {
       preload: path.join(__dirname, "changelog-dialog-preload.js"),
       contextIsolation: true,
       sandbox: true,
     },
   });
-  win.setMenuBarVisibility(false);
-  win.webContents.once("did-finish-load", () => {
-    win.webContents.send("updater:notes", {
+
+  changelogWin.setMenuBarVisibility(false);
+
+  changelogWin.webContents.once("did-finish-load", () => {
+    if (!changelogWin || changelogWin.isDestroyed()) return;
+    changelogWin.webContents.send("updater:notes", {
       version,
       releaseName,
       releaseNotes,
+      locale: currentLocale(),
     });
   });
-  win.loadFile(path.join(__dirname, "changelog-dialog.html"), {
+
+  changelogWin.once("ready-to-show", () => {
+    if (changelogWin && !changelogWin.isDestroyed()) {
+      changelogWin.show();
+      changelogWin.focus();
+    }
+  });
+
+  changelogWin.on("closed", () => {
+    changelogWin = null;
+    if (parent && !parent.isDestroyed()) {
+      parent.focus();
+    }
+  });
+
+  changelogWin.loadFile(path.join(__dirname, "changelog-dialog.html"), {
     query: { locale: currentLocale() },
   });
-  return win;
+  return changelogWin;
 }
 
 // Runs once per real app launch (not the deep-link router, not a relaunch
@@ -121,7 +177,29 @@ function broadcastStatus() {
   }
 }
 
-const { ipcMain } = require("electron");
+ipcMain.on("updater:changelog-close", (event) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  if (win && !win.isDestroyed()) {
+    win.close();
+  }
+});
+
+ipcMain.on("updater:open-link", (_event, url) => {
+  if (url && (url.startsWith("https://") || url.startsWith("http://"))) {
+    shell.openExternal(url);
+  }
+});
+
+ipcMain.handle("updater:open-changelog", (_event, customNotes) => {
+  openChangelogWindow(
+    customNotes || {
+      version: app.getVersion(),
+      releaseName: `Zappr v${app.getVersion()}`,
+      releaseNotes: "",
+    },
+  );
+  return { ok: true };
+});
 
 ipcMain.handle("updater:get-status", () => currentStatus);
 
@@ -252,4 +330,4 @@ function initUpdater(config) {
   startBackgroundChecks();
 }
 
-module.exports = { initUpdater };
+module.exports = { initUpdater, openChangelogWindow };

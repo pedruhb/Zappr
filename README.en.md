@@ -8,13 +8,17 @@
 
 Modern, high-performance desktop client for WhatsApp Web built with Electron for **Linux** and **Windows**, featuring native audio/video calls, screen sharing, multiple isolated sessions in tabs with a Discord-style sidebar, intelligent `whatsapp://` link distribution, per-session granular audio control, and real-time unread message badges.
 
+<p align="center">
+  <img src="docs/screenshots/whatsapp-qrcode.png" alt="Zappr Main Interface" width="850">
+</p>
+
 ---
 
 ## ✨ Features & Highlights
 
 ### 👥 Multiple Isolated Sessions in Tabs
 
-- **Discord-style sidebar**: Manage up to 6 WhatsApp accounts seamlessly within a single sleek window.
+- **Discord-style sidebar**: Manage unlimited WhatsApp accounts seamlessly within a single sleek window.
 - **Complete session isolation**: Each tab runs inside an isolated Electron partition (`persist:partition`), keeping session data, logins, and cookies 100% segregated.
 - **Drag & Drop reordering**: Easily reorganize sessions by dragging icons up and down with instant green drop indicators and fluid animations.
 - **WhatsApp Profile Photo Sync**: Automatically pull and apply your official WhatsApp profile picture with a single click in the session editor or directly from the right-click context menu.
@@ -67,18 +71,30 @@ Modern, high-performance desktop client for WhatsApp Web built with Electron for
 
 ---
 
+## 📸 Screenshots
+
+|                            Main Interface & Multiple Accounts                             |                        Session Editing & WhatsApp Photo Sync                        |
+| :---------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------: |
+|     <img src="docs/screenshots/whatsapp-qrcode.png" alt="Main Interface" width="420">     |    <img src="docs/screenshots/edit-session.png" alt="Edit Session" width="420">     |
+|                          **Granular Volume Control per Session**                          |                        **Custom Colors & Dynamic Titlebar**                         |
+| <img src="docs/screenshots/session-settings-volume.png" alt="Volume Control" width="420"> | <img src="docs/screenshots/edit-session-color.png" alt="Session Color" width="420"> |
+|                         **Smart Link Distribution (whatsapp://)**                         |                          **About Zappr & Update Checker**                           |
+|      <img src="docs/screenshots/whatsapp-link.png" alt="WhatsApp Links" width="420">      |      <img src="docs/screenshots/app-about.png" alt="About Zappr" width="420">       |
+
+---
+
 ## ⌨️ Keyboard Shortcuts
 
 | Shortcut                      | Action                                               |
 | :---------------------------- | :--------------------------------------------------- |
-| `Ctrl + 1` to `Ctrl + 6`      | Switch directly to the corresponding session         |
+| `Ctrl + 1` to `Ctrl + 9`      | Switch directly to the corresponding session         |
 | `Ctrl + N`                    | Add a new WhatsApp session                           |
 | `Ctrl + R` / `F5`             | Reload the active session                            |
 | `Ctrl + Shift + R`            | Hard reload the active session (clears render cache) |
 | `Ctrl + +` / `Ctrl + -`       | Zoom in / Zoom out                                   |
 | `Ctrl + 0`                    | Reset zoom to 100%                                   |
 | `F11`                         | Toggle fullscreen mode                               |
-| `1` to `6` _(in link dialog)_ | Choose session to open the link                      |
+| `1` to `9` _(in link dialog)_ | Choose session to open the link                      |
 | `Enter` _(in link dialog)_    | Open link in selected session                        |
 | `Esc`                         | Close dialogs and modals                             |
 

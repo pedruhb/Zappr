@@ -9,7 +9,10 @@ window.ZAPPR_STRINGS = {
     addDialog: {
       windowTitle: "Añadir sesión",
       heading: "Nueva sesión aislada de Zappr",
-      count: (count, max) => `Sesiones configuradas: ${count}/${max}`,
+      count: (count, max) =>
+        Number.isFinite(max)
+          ? `Sesiones configuradas: ${count}/${max}`
+          : `Sesiones configuradas: ${count}`,
       namePlaceholder: "Ej: Personal, Trabajo, Familia",
       success: "¡Listo! Abriendo la sesión...",
       cancel: "Cancelar",
@@ -87,8 +90,11 @@ window.ZAPPR_STRINGS = {
     changelogDialog: {
       windowTitle: "Novedades de Zappr",
       heading: (version) => `Zappr se actualizó a ${version}`,
-      subheading: "Esto es lo que cambió:",
-      noNotes: "No hay notas de esta versión.",
+      subheading: "Esto es lo que cambió en esta versión:",
+      noNotes: "No hay notas detalladas para esta versión.",
+      noNotesDesc:
+        "Podés consultar el historial completo de lanzamientos y notas en GitHub.",
+      viewOnGithub: "Ver en GitHub",
       close: "Cerrar",
     },
     sessionModal: {
@@ -150,7 +156,10 @@ window.ZAPPR_STRINGS = {
     addDialog: {
       windowTitle: "Add session",
       heading: "New isolated Zappr session",
-      count: (count, max) => `Configured sessions: ${count}/${max}`,
+      count: (count, max) =>
+        Number.isFinite(max)
+          ? `Configured sessions: ${count}/${max}`
+          : `Configured sessions: ${count}`,
       namePlaceholder: "E.g.: Personal, Work, Family",
       success: "Done! Opening the session...",
       cancel: "Cancel",
@@ -228,8 +237,11 @@ window.ZAPPR_STRINGS = {
     changelogDialog: {
       windowTitle: "What's new in Zappr",
       heading: (version) => `Zappr updated to ${version}`,
-      subheading: "Here's what changed:",
-      noNotes: "No release notes for this version.",
+      subheading: "Here's what changed in this version:",
+      noNotes: "No detailed release notes for this version.",
+      noNotesDesc:
+        "You can check the full release history and notes on GitHub.",
+      viewOnGithub: "View on GitHub",
       close: "Close",
     },
     sessionModal: {
@@ -289,7 +301,10 @@ window.ZAPPR_STRINGS = {
     addDialog: {
       windowTitle: "Adicionar sessão",
       heading: "Nova sessão isolada do Zappr",
-      count: (count, max) => `Sessões configuradas: ${count}/${max}`,
+      count: (count, max) =>
+        Number.isFinite(max)
+          ? `Sessões configuradas: ${count}/${max}`
+          : `Sessões configuradas: ${count}`,
       namePlaceholder: "Ex: Trabalho, Pessoal, Vendas",
       success: "Pronto! Abrindo a sessão...",
       cancel: "Cancelar",
@@ -367,8 +382,11 @@ window.ZAPPR_STRINGS = {
     changelogDialog: {
       windowTitle: "Novidades do Zappr",
       heading: (version) => `Zappr foi atualizado para ${version}`,
-      subheading: "Confira as mudanças:",
-      noNotes: "Sem notas de versão.",
+      subheading: "Confira o que há de novo nesta versão:",
+      noNotes: "Sem notas detalhadas para esta versão.",
+      noNotesDesc:
+        "Você pode acompanhar o histórico completo de lançamentos e novidades no GitHub.",
+      viewOnGithub: "Ver no GitHub",
       close: "Fechar",
     },
     sessionModal: {

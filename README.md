@@ -8,13 +8,17 @@
 
 Cliente desktop moderno e de alta performance para WhatsApp Web construído em Electron para **Linux** e **Windows**, com suporte nativo a chamadas de voz e vídeo, compartilhamento de tela, múltiplas contas isoladas em abas com barra lateral estilo Discord, distribuição inteligente de links `whatsapp://`, controle granular de áudio por sessão e badges de mensagens não lidas em tempo real.
 
+<p align="center">
+  <img src="docs/screenshots/whatsapp-qrcode.png" alt="Zappr Interface Principal" width="850">
+</p>
+
 ---
 
 ## ✨ Recursos em Destaque
 
 ### 👥 Múltiplas Contas Isoladas em Abas
 
-- **Barra lateral estilo Discord**: Gerencie até 6 contas do WhatsApp simultaneamente em uma única janela elegante.
+- **Barra lateral estilo Discord**: Gerencie contas ilimitadas do WhatsApp simultaneamente em uma única janela elegante.
 - **Isolamento total de sessão**: Cada aba opera em uma partição isolada do Electron (`persist:partition`), mantendo dados, logins e cookies 100% segregados e seguros.
 - **Reorganização por Arrastar e Soltar (Drag & Drop)**: Reordene facilmente suas contas na barra lateral arrastando os ícones para cima ou para baixo com indicador visual verde e animação fluida.
 - **Sincronização de Foto do Perfil do WhatsApp**: Puxe e aplique automaticamente a foto oficial do seu perfil do WhatsApp com um clique no modal de edição ou diretamente pelo menu de contexto de clique direito da aba.
@@ -72,18 +76,30 @@ Cliente desktop moderno e de alta performance para WhatsApp Web construído em E
 
 ---
 
+## 📸 Capturas de Tela
+
+|                            Interface Principal & Múltiplas Contas                            |                         Edição de Sessão & Foto do WhatsApp                         |
+| :------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------: |
+|    <img src="docs/screenshots/whatsapp-qrcode.png" alt="Interface Principal" width="420">    |    <img src="docs/screenshots/edit-session.png" alt="Editar Sessão" width="420">    |
+|                          **Controle Granular de Volume por Sessão**                          |                    **Personalização de Cores & Barra Dinâmica**                     |
+| <img src="docs/screenshots/session-settings-volume.png" alt="Volume por Sessão" width="420"> | <img src="docs/screenshots/edit-session-color.png" alt="Cor da Sessão" width="420"> |
+|                     **Distribuição Inteligente de Links (whatsapp://)**                      |                   **Sobre o Zappr & Verificador de Atualizações**                   |
+|      <img src="docs/screenshots/whatsapp-link.png" alt="Links do WhatsApp" width="420">      |     <img src="docs/screenshots/app-about.png" alt="Sobre o Zappr" width="420">      |
+
+---
+
 ## ⌨️ Atalhos de Teclado
 
 | Atalho                          | Ação                                                            |
 | :------------------------------ | :-------------------------------------------------------------- |
-| `Ctrl + 1` até `Ctrl + 6`       | Alternar diretamente para a sessão correspondente               |
+| `Ctrl + 1` até `Ctrl + 9`       | Alternar diretamente para a sessão correspondente               |
 | `Ctrl + N`                      | Adicionar uma nova sessão do WhatsApp                           |
 | `Ctrl + R` / `F5`               | Recarregar a sessão ativa                                       |
 | `Ctrl + Shift + R`              | Forçar recarga da sessão ativa (limpando cache de renderização) |
 | `Ctrl + +` / `Ctrl + -`         | Aumentar ou diminuir o zoom                                     |
 | `Ctrl + 0`                      | Restaurar zoom padrão (100%)                                    |
 | `F11`                           | Alternar tela cheia                                             |
-| `1` a `6` _(no modal de links)_ | Escolher a sessão para abrir o link                             |
+| `1` a `9` _(no modal de links)_ | Escolher a sessão para abrir o link                             |
 | `Enter` _(no modal de links)_   | Confirmar abertura do link na sessão selecionada                |
 | `Esc`                           | Fechar modais e janelas secundárias                             |
 

@@ -1,6 +1,6 @@
 "use strict";
 
-const { Menu, app, ipcMain } = require("electron");
+const { Menu, BrowserWindow, app, ipcMain } = require("electron");
 const { openSettingsDialog } = require("../deepLinks");
 const {
   getAutoRouteOldest,
@@ -17,14 +17,20 @@ function quit() {
   app.quit();
 }
 
-function changeLanguage(locale, win) {
+function changeLanguage(locale, _win) {
   if (currentLocale() === locale) return;
   setLocale(locale);
   titlebar.push();
   const { notifySessionsChanged } = require("../sessions");
   notifySessionsChanged();
-  if (win && !win.isDestroyed()) {
-    win.webContents.send("i18n:changed", locale);
+  for (const w of BrowserWindow.getAllWindows()) {
+    if (!w.isDestroyed()) {
+      try {
+        w.webContents.send("i18n:changed", locale);
+      } catch {
+        // window closing
+      }
+    }
   }
 }
 
@@ -62,14 +68,12 @@ function buildTemplate(win) {
           },
         ],
       },
-      { type: "separator" },
       {
-        label: t("menu.exportSettings"),
-        click: () => exportBackup(win),
-      },
-      {
-        label: t("menu.importSettings"),
-        click: () => importBackup(win),
+        label: t("menu.whatsNew"),
+        click: () => {
+          const { openChangelogWindow } = require("../updater");
+          openChangelogWindow();
+        },
       },
       { type: "separator" },
       { label: t("menu.quit"), accelerator: "CmdOrCtrl+Q", click: quit },
