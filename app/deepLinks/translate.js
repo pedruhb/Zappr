@@ -53,7 +53,10 @@ function parseDeepLink(whatsappUrl) {
     phone = cleanPhone;
   }
 
-  return { phone, text };
+  const autoSendParam = parsed.searchParams.get("autosend");
+  const autoSend = autoSendParam === "1" || autoSendParam === "true";
+
+  return { phone, text, autoSend };
 }
 
 // WhatsApp Web's own /send route takes the same phone/text query params

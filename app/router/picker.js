@@ -421,6 +421,9 @@ window.linkPicker.onInit((sessions, options = {}) => {
     if (typeof options.text === "string" && messageInputEl) {
       messageInputEl.value = options.text;
     }
+    if (typeof options.autoSend === "boolean" && autoSendEl) {
+      autoSendEl.checked = options.autoSend;
+    }
   }
 
   render();

@@ -769,6 +769,301 @@ function getMainWindow() {
   return currentMainWindow;
 }
 
+const activeAutoSendSupervisors = new Map();
+const recentSendHistory = new Map();
+
+function startAutoSendSupervisor(view, targetId) {
+  if (!view || !view.webContents || view.webContents.isDestroyed()) return;
+
+  // Clear any existing supervisor running on the same session
+  if (activeAutoSendSupervisors.has(targetId)) {
+    clearInterval(activeAutoSendSupervisors.get(targetId));
+    activeAutoSendSupervisors.delete(targetId);
+  }
+
+  let attempts = 0;
+  const maxAttempts = 60; // 60 * 300ms = 18s
+  let hasTriggeredSend = false;
+
+  // Read-only inspection script: does NOT click or mutate DOM
+  const checkScript = `
+    (function() {
+      try {
+        // 1. Detect invalid phone number modal
+        const invalidModal = document.querySelector(
+          'div[data-animate-modal-popup="true"], [data-testid="popup-contents"], div[role="dialog"]'
+        );
+        if (invalidModal) {
+          const modalText = (invalidModal.textContent || '').toLowerCase();
+          if (
+            modalText.includes('url') ||
+            modalText.includes('inválid') ||
+            modalText.includes('invalid') ||
+            modalText.includes('não encontrado') ||
+            modalText.includes('not found')
+          ) {
+            return { status: 'invalid_number' };
+          }
+        }
+
+        // 2. Locate composer input field
+        const chatInput = document.querySelector(
+          '#main footer div[contenteditable="true"], footer div[contenteditable="true"], div[data-lexical-editor="true"]'
+        );
+        const currentText = chatInput ? (chatInput.textContent || '').trim() : '';
+
+        // 3. Locate send button
+        function findSendButton() {
+          const directSelectors = [
+            '[data-testid="send"]',
+            '[data-testid="compose-btn-send"]',
+            'button[data-testid="send"]',
+            'span[data-testid="send"]',
+            'span[data-icon="send"]',
+            'span[data-icon="send-light"]',
+            'span[data-icon="wds-ic-send-filled"]',
+            '[data-icon="send"]',
+            '[data-icon="wds-ic-send-filled"]',
+            '[data-icon*="send"]',
+          ];
+          for (const sel of directSelectors) {
+            const el = document.querySelector(sel);
+            if (el) {
+              return el.closest('button, [role="button"]') || el;
+            }
+          }
+
+          const ariaMatches = document.querySelectorAll(
+            '#main footer button[aria-label], footer button[aria-label], #main footer [role="button"][aria-label], footer [role="button"][aria-label]'
+          );
+          for (const el of ariaMatches) {
+            const label = (el.getAttribute('aria-label') || '').toLowerCase();
+            if (label.includes('enviar') || label.includes('send')) {
+              return el;
+            }
+          }
+
+          const footer = document.querySelector('#main footer, footer');
+          if (footer) {
+            const paths = footer.querySelectorAll('path');
+            for (const p of paths) {
+              const d = p.getAttribute('d') || '';
+              if (
+                d.includes('21.757') ||
+                d.includes('12.028') ||
+                d.includes('1.101') ||
+                d.includes('13.623')
+              ) {
+                return p.closest('button, [role="button"]') || p.closest('span') || p;
+              }
+            }
+
+            const buttons = footer.querySelectorAll('button, [role="button"]');
+            for (const btn of buttons) {
+              const html = btn.outerHTML.toLowerCase();
+              const isMic =
+                html.includes('ptt') ||
+                html.includes('audio-mic') ||
+                html.includes('mic') ||
+                html.includes('grav');
+              const isAttach =
+                html.includes('attach') ||
+                html.includes('anexo') ||
+                html.includes('clip');
+              const isEmoji =
+                html.includes('smiley') ||
+                html.includes('emoji') ||
+                html.includes('sticker');
+              if (!isMic && !isAttach && !isEmoji) {
+                const input = footer.querySelector('div[contenteditable="true"]');
+                if (
+                  input &&
+                  (input.compareDocumentPosition(btn) &
+                    Node.DOCUMENT_POSITION_FOLLOWING)
+                ) {
+                  return btn;
+                }
+              }
+            }
+          }
+
+          return null;
+        }
+
+        const sendBtn = findSendButton();
+
+        return {
+          status: 'ok',
+          hasInput: Boolean(chatInput),
+          hasSendBtn: Boolean(sendBtn),
+          textLength: currentText.length,
+        };
+      } catch (err) {
+        return { status: 'error', error: String(err) };
+      }
+    })()
+  `;
+
+  // Single-action execution script: triggers ONE single native click
+  const triggerSendScript = `
+    (function() {
+      try {
+        function findSendButton() {
+          const directSelectors = [
+            '[data-testid="send"]',
+            '[data-testid="compose-btn-send"]',
+            'button[data-testid="send"]',
+            'span[data-testid="send"]',
+            'span[data-icon="send"]',
+            'span[data-icon="send-light"]',
+            'span[data-icon="wds-ic-send-filled"]',
+            '[data-icon="send"]',
+            '[data-icon="wds-ic-send-filled"]',
+            '[data-icon*="send"]',
+          ];
+          for (const sel of directSelectors) {
+            const el = document.querySelector(sel);
+            if (el) {
+              return el.closest('button, [role="button"]') || el;
+            }
+          }
+
+          const ariaMatches = document.querySelectorAll(
+            '#main footer button[aria-label], footer button[aria-label], #main footer [role="button"][aria-label], footer [role="button"][aria-label]'
+          );
+          for (const el of ariaMatches) {
+            const label = (el.getAttribute('aria-label') || '').toLowerCase();
+            if (label.includes('enviar') || label.includes('send')) {
+              return el;
+            }
+          }
+
+          const footer = document.querySelector('#main footer, footer');
+          if (footer) {
+            const paths = footer.querySelectorAll('path');
+            for (const p of paths) {
+              const d = p.getAttribute('d') || '';
+              if (
+                d.includes('21.757') ||
+                d.includes('12.028') ||
+                d.includes('1.101') ||
+                d.includes('13.623')
+              ) {
+                return p.closest('button, [role="button"]') || p.closest('span') || p;
+              }
+            }
+
+            const buttons = footer.querySelectorAll('button, [role="button"]');
+            for (const btn of buttons) {
+              const html = btn.outerHTML.toLowerCase();
+              const isMic =
+                html.includes('ptt') ||
+                html.includes('audio-mic') ||
+                html.includes('mic') ||
+                html.includes('grav');
+              const isAttach =
+                html.includes('attach') ||
+                html.includes('anexo') ||
+                html.includes('clip');
+              const isEmoji =
+                html.includes('smiley') ||
+                html.includes('emoji') ||
+                html.includes('sticker');
+              if (!isMic && !isAttach && !isEmoji) {
+                const input = footer.querySelector('div[contenteditable="true"]');
+                if (
+                  input &&
+                  (input.compareDocumentPosition(btn) &
+                    Node.DOCUMENT_POSITION_FOLLOWING)
+                ) {
+                  return btn;
+                }
+              }
+            }
+          }
+
+          return null;
+        }
+
+        const btn = findSendButton();
+        if (btn) {
+          try { btn.focus(); } catch (_) {}
+          try { btn.click(); } catch (_) {}
+          return { clicked: true };
+        }
+
+        const chatInput = document.querySelector(
+          '#main footer div[contenteditable="true"], footer div[contenteditable="true"], div[data-lexical-editor="true"]'
+        );
+        if (chatInput) {
+          try { chatInput.focus(); } catch (_) {}
+          return { clicked: false, focusedInput: true };
+        }
+
+        return { clicked: false };
+      } catch (e) {
+        return { clicked: false, error: String(e) };
+      }
+    })()
+  `;
+
+  const intervalId = setInterval(async () => {
+    attempts++;
+    if (
+      !view.webContents ||
+      view.webContents.isDestroyed() ||
+      attempts >= maxAttempts
+    ) {
+      clearInterval(intervalId);
+      activeAutoSendSupervisors.delete(targetId);
+      return;
+    }
+
+    try {
+      const res = await view.webContents.executeJavaScript(checkScript);
+      if (!res || res.status === "invalid_number") {
+        clearInterval(intervalId);
+        activeAutoSendSupervisors.delete(targetId);
+        return;
+      }
+
+      // If we already triggered send:
+      if (hasTriggeredSend) {
+        // Confirmation: input text is now cleared OR send button disappeared (switched to mic)
+        if (res.hasInput && (res.textLength === 0 || !res.hasSendBtn)) {
+          clearInterval(intervalId);
+          activeAutoSendSupervisors.delete(targetId);
+          return;
+        }
+        // Never retry or re-click once triggered: wait for confirmation or timeout
+        return;
+      }
+
+      // We have NOT triggered send yet:
+      // Wait until the input has the message text
+      if (res.hasInput && res.textLength > 0) {
+        hasTriggeredSend = true;
+
+        if (res.hasSendBtn) {
+          await view.webContents.executeJavaScript(triggerSendScript);
+        } else {
+          // If send button icon not found directly, focus input and send native Enter keystroke
+          const trigRes = await view.webContents.executeJavaScript(triggerSendScript);
+          if (trigRes && trigRes.focusedInput && !view.webContents.isDestroyed()) {
+            view.webContents.sendInputEvent({ type: "keyDown", keyCode: "Enter" });
+            view.webContents.sendInputEvent({ type: "char", keyCode: "Enter" });
+            view.webContents.sendInputEvent({ type: "keyUp", keyCode: "Enter" });
+          }
+        }
+      }
+    } catch {
+      // Ignore intermittent script errors while page navigates
+    }
+  }, 300);
+
+  activeAutoSendSupervisors.set(targetId, intervalId);
+}
+
 function sendWhatsAppMessageToSession(
   desktopId,
   phone,
@@ -799,83 +1094,57 @@ function sendWhatsAppMessageToSession(
   const targetWebUrl = `https://web.whatsapp.com/send?phone=${fullPhone}&text=${encodedText}`;
   const shouldAutoSend = Boolean(autoSend && text && text.trim().length > 0);
 
-  const jsCode = `
-    (function() {
-      try {
-        const linkInvisivel = document.createElement('a');
-        linkInvisivel.setAttribute('href', ${JSON.stringify(targetWebUrl)});
-        linkInvisivel.setAttribute('style', 'display:none;');
-        document.body.appendChild(linkInvisivel);
-        linkInvisivel.click();
-        document.body.removeChild(linkInvisivel);
-      } catch (e) {
-        console.error("Erro ao despachar chat no WhatsApp Web:", e);
+  // Idempotency / Deduplication Guard: block identical sends within 4 seconds
+  const dedupeKey = `${targetId}:${fullPhone}:${encodedText}`;
+  const now = Date.now();
+  if (shouldAutoSend && recentSendHistory.has(dedupeKey)) {
+    const lastSent = recentSendHistory.get(dedupeKey);
+    if (now - lastSent < 4000) {
+      return;
+    }
+  }
+  if (shouldAutoSend) {
+    recentSendHistory.set(dedupeKey, now);
+    if (recentSendHistory.size > 50) {
+      for (const [k, time] of recentSendHistory.entries()) {
+        if (now - time > 10000) recentSendHistory.delete(k);
       }
+    }
+  }
 
-      if (${shouldAutoSend}) {
-        let attempts = 0;
-        const maxAttempts = 60;
-        const checkInterval = setInterval(() => {
-          attempts++;
-          try {
-            const sendIcon = document.querySelector(
-              'footer span[data-icon="send"], footer span[data-icon="send-light"], footer span[data-icon="wds-ic-send-filled"], span[data-icon="send"]'
-            );
-            const sendBtn = sendIcon ? sendIcon.closest('button') : null;
-            if (sendBtn) {
-              sendBtn.click();
-              clearInterval(checkInterval);
-              return;
-            }
+  const dispatchNavigation = () => {
+    if (!view.webContents || view.webContents.isDestroyed()) return;
 
-            const ariaBtn = document.querySelector(
-              'footer button[aria-label="Enviar"], footer button[aria-label="Send"], footer button[aria-label="enviar"], footer button[data-tab="11"]'
-            );
-            if (ariaBtn) {
-              ariaBtn.click();
-              clearInterval(checkInterval);
-              return;
-            }
+    const navCode = `
+      (function() {
+        try {
+          const linkInvisivel = document.createElement('a');
+          linkInvisivel.setAttribute('href', ${JSON.stringify(targetWebUrl)});
+          linkInvisivel.setAttribute('style', 'display:none;');
+          document.body.appendChild(linkInvisivel);
+          linkInvisivel.click();
+          document.body.removeChild(linkInvisivel);
+        } catch (e) {
+          console.error("Erro ao despachar chat no WhatsApp Web:", e);
+        }
+      })();
+    `;
 
-            const chatInput = document.querySelector(
-              'footer div[contenteditable="true"][data-tab="10"], footer div[contenteditable="true"]'
-            );
-            if (chatInput && chatInput.textContent && chatInput.textContent.trim().length > 0) {
-              chatInput.focus();
-              const enterEvent = new KeyboardEvent('keydown', {
-                key: 'Enter',
-                code: 'Enter',
-                keyCode: 13,
-                which: 13,
-                bubbles: true,
-                cancelable: true,
-              });
-              chatInput.dispatchEvent(enterEvent);
-              clearInterval(checkInterval);
-              return;
-            }
-          } catch (err) {
-            console.error("Erro no auto-send do Zappr:", err);
-          }
+    view.webContents.executeJavaScript(navCode).catch(() => {});
 
-          if (attempts >= maxAttempts) {
-            clearInterval(checkInterval);
-          }
-        }, 300);
-      }
-    })();
-  `;
+    if (shouldAutoSend) {
+      startAutoSendSupervisor(view, targetId);
+    }
+  };
 
   if (view.webContents.isLoading()) {
     view.webContents.once("did-finish-load", () => {
       setTimeout(() => {
-        if (!view.webContents.isDestroyed()) {
-          view.webContents.executeJavaScript(jsCode).catch(() => {});
-        }
+        dispatchNavigation();
       }, 700);
     });
   } else {
-    view.webContents.executeJavaScript(jsCode).catch(() => {});
+    dispatchNavigation();
   }
 }
 

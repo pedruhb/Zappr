@@ -51,6 +51,8 @@ function ensureIpcHandlers() {
 
       const cb = currentOnChosen;
       const url = currentUrl;
+      currentOnChosen = null;
+      currentUrl = null;
       if (currentPickerWin && !currentPickerWin.isDestroyed()) {
         currentPickerWin.close();
       }
@@ -113,6 +115,7 @@ function openPickerModal(parentWin, whatsappUrl, onChosen) {
   const parsed = parseDeepLink(whatsappUrl);
   const phone = parsed?.phone || "";
   const text = parsed?.text || "";
+  const autoSendFromUrl = parsed?.autoSend;
 
   const mWidth = 440;
   const mHeight = 580;
@@ -177,6 +180,7 @@ function openPickerModal(parentWin, whatsappUrl, onChosen) {
         defaultSelectedId: defaultSelected,
         phone,
         text,
+        autoSend: autoSendFromUrl,
       });
     }
   });
@@ -240,7 +244,10 @@ function handleWhatsAppLink(whatsappUrl, parentWin) {
       extra && typeof extra.message === "string"
         ? extra.message
         : parsed?.text || "";
-    const autoSend = extra ? Boolean(extra.autoSend) : false;
+    const autoSend =
+      extra && typeof extra.autoSend === "boolean"
+        ? extra.autoSend
+        : Boolean(parsed?.autoSend);
     sendWhatsAppMessageToSession(chosenDesktopId, phone, text, autoSend);
   });
 }
