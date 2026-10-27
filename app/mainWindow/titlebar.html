@@ -446,6 +446,136 @@
         transform: rotate(90deg);
       }
 
+      /* Custom buttons section divider */
+      .custom-buttons-divider {
+        width: 32px;
+        height: 2px;
+        background: var(--sidebar-border);
+        border-radius: 1px;
+        margin: 6px 0 2px;
+        flex-shrink: 0;
+        opacity: 0.8;
+      }
+
+      /* Custom Action Button */
+      .custom-action-btn {
+        position: relative;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--item-bg);
+        border: none;
+        outline: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        padding: 0;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+        transition:
+          border-radius 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+          background-color 0.22s ease,
+          color 0.22s ease,
+          transform 0.15s ease,
+          box-shadow 0.22s ease,
+          opacity 0.2s ease,
+          filter 0.2s ease;
+      }
+
+      .session-wrapper:hover .custom-action-btn:not(:disabled):not(.disabled) {
+        border-radius: 14px;
+        transform: scale(1.05);
+      }
+
+      .custom-action-btn:active:not(:disabled):not(.disabled) {
+        transform: scale(0.95);
+      }
+
+      .custom-action-btn svg {
+        width: 22px;
+        height: 22px;
+        pointer-events: none;
+        transition: transform 0.2s ease;
+      }
+
+      .session-wrapper:hover .custom-action-btn:not(:disabled):not(.disabled) svg {
+        transform: scale(1.1);
+      }
+
+      /* Disabled state when no conversation is open */
+      .custom-action-btn:disabled,
+      .custom-action-btn.disabled {
+        opacity: 0.35 !important;
+        filter: grayscale(75%) !important;
+        cursor: not-allowed !important;
+        transform: none !important;
+        box-shadow: none !important;
+        pointer-events: none;
+      }
+
+      .session-wrapper.has-disabled-btn {
+        cursor: not-allowed;
+      }
+
+      /* Add Custom Button (+) */
+      .add-custom-btn {
+        position: relative;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--item-bg);
+        color: var(--text-secondary);
+        border: 2px dashed
+          color-mix(in srgb, var(--text-secondary) 45%, transparent);
+        outline: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition:
+          border-radius 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+          background-color 0.22s ease,
+          border-color 0.22s ease,
+          color 0.22s ease,
+          transform 0.2s ease;
+      }
+
+      .add-custom-btn svg {
+        width: 18px;
+        height: 18px;
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .session-wrapper:hover .add-custom-btn {
+        border-radius: 14px;
+        background: #2a3942;
+        border-style: solid;
+        border-color: var(--whatsapp-green);
+        color: var(--whatsapp-green);
+        transform: scale(1.04);
+      }
+
+      .session-wrapper:hover .add-custom-btn svg {
+        transform: rotate(90deg);
+      }
+
+      .custom-btn-pulse {
+        animation: custom-btn-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      @keyframes custom-btn-pop {
+        0% {
+          transform: scale(0.9);
+        }
+        50% {
+          transform: scale(1.15);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+
       /* Discord-style Tooltip (Floats to the left of the icon) */
       .session-tooltip {
         position: absolute;

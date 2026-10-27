@@ -95,6 +95,7 @@ let activeSessionId = "zappr";
 const sessionViews = new Map(); // desktopId -> WebContentsView
 const sessionUnreadCounts = new Map(); // desktopId -> unread count
 const sessionQrWaiting = new Map(); // desktopId -> boolean
+const sessionActiveChat = new Map(); // desktopId -> { hasActiveChat, phone, name }
 
 function getDesktopIdByWebContents(sender) {
   if (!sender) return null;
@@ -175,6 +176,46 @@ ipcMain.handle("sessions:get-statuses", () => {
   return result;
 });
 
+function broadcastActiveChatState(desktopId, data) {
+  if (currentMainWindow && !currentMainWindow.isDestroyed()) {
+    try {
+      currentMainWindow.webContents.send("session:chat-status-changed", {
+        desktopId,
+        ...data,
+      });
+    } catch {
+      // Window may be closing
+    }
+  }
+}
+
+ipcMain.on("session:active-chat-changed", (event, data) => {
+  const desktopId = getDesktopIdByWebContents(event.sender);
+  if (!desktopId) return;
+  const current = sessionActiveChat.get(desktopId);
+  const jsonCur = current ? JSON.stringify(current) : "";
+  const jsonNew = JSON.stringify(data);
+  if (jsonCur !== jsonNew) {
+    sessionActiveChat.set(desktopId, data);
+    broadcastActiveChatState(desktopId, data);
+  }
+});
+
+ipcMain.handle("session:get-active-chat-status", async (_event, desktopId) => {
+  const targetId = desktopId || activeSessionId;
+  if (sessionActiveChat.has(targetId)) {
+    return sessionActiveChat.get(targetId);
+  }
+  const view = sessionViews.get(targetId);
+  if (view && view.webContents) {
+    const { getChatStatusFromWebContents } = require("../customButtons");
+    const status = await getChatStatusFromWebContents(view.webContents);
+    sessionActiveChat.set(targetId, status);
+    return status;
+  }
+  return { hasActiveChat: false, isGroup: false, phone: "", name: "" };
+});
+
 function pollSessionUnreadCounts() {
   for (const [id, view] of sessionViews.entries()) {
     if (!view || !view.webContents || view.webContents.isDestroyed()) continue;
@@ -212,9 +253,192 @@ function pollSessionUnreadCounts() {
               (!document.querySelector('button[data-navbar-item-index="0"]') && !document.querySelector('#side') && document.querySelector('canvas'))
             );
 
-            return { unread, isQrWaiting: hasQr };
+            const mainEl = document.querySelector("#main");
+            const hasActiveChat = Boolean(mainEl);
+            let phone = "";
+            let name = "";
+            let isGroup = false;
+
+            if (mainEl) {
+              function extractPhoneFromText(str) {
+                if (!str) return "";
+                const intl = /\\+[\\d\\s()–—\\-]{6,25}/.exec(str);
+                if (intl) {
+                  const digits = intl[0].replace(/\\D/g, "");
+                  if (digits.length >= 8 && digits.length <= 16) return digits;
+                }
+                const allDigits = str.replace(/\\D/g, "");
+                if (allDigits.length >= 10 && allDigits.length <= 16) {
+                  const letterCount = (str.match(/[a-zA-Z\\u00C0-\\u017F]/g) || []).length;
+                  if (letterCount <= 3) return allDigits;
+                }
+                return "";
+              }
+
+              function checkIfGroup(el) {
+                if (!el) return false;
+
+                const hdr = el.querySelector("header");
+                if (hdr) {
+                  // Explicit contact signals
+                  if (hdr.querySelector('[data-icon*="default-user"], [data-testid*="default-user"]')) {
+                    return false;
+                  }
+                  const hdrText = (hdr.textContent || "").toLowerCase();
+                  if (
+                    hdrText.includes("online") ||
+                    hdrText.includes("visto por") ||
+                    hdrText.includes("last seen")
+                  ) {
+                    return false;
+                  }
+
+                  // Explicit group signals
+                  if (
+                    hdr.querySelector(
+                      '[data-icon*="group"], [data-testid*="group"], [data-icon*="community"], [data-testid*="community"]'
+                    )
+                  ) {
+                    return true;
+                  }
+                  if (
+                    hdrText.includes("dados do grupo") ||
+                    hdrText.includes("group info") ||
+                    hdrText.includes("informações do grupo") ||
+                    hdrText.includes("información del grupo") ||
+                    hdrText.includes("admin do grupo") ||
+                    hdrText.includes("group admin") ||
+                    hdrText.includes("somente admins") ||
+                    hdrText.includes("only admins") ||
+                    hdrText.includes("participantes") ||
+                    hdrText.includes("participants")
+                  ) {
+                    return true;
+                  }
+                  if (/(?:^|\\s)(?:você|you|tú),\\s/i.test(hdrText)) {
+                    return true;
+                  }
+                }
+
+                // Active sidebar row
+                const selRow = document.querySelector(
+                  '#pane-side [aria-selected="true"], #pane-side div[role="listitem"].active, #pane-side div[role="row"][aria-selected="true"]'
+                );
+                if (selRow) {
+                  const rowId = selRow.getAttribute("data-id") || selRow.querySelector("[data-id]")?.getAttribute("data-id") || "";
+                  if (rowId.includes("@c.us") || rowId.includes("@s.whatsapp.net")) return false;
+                  if (rowId.includes("@g.us")) return true;
+                  if (
+                    selRow.querySelector(
+                      '[data-icon*="group"], [data-testid*="group"], [data-icon*="community"], [data-testid*="community"]'
+                    )
+                  ) {
+                    return true;
+                  }
+                  if (
+                    selRow.querySelector(
+                      '[data-icon*="default-user"], [data-testid*="default-user"]'
+                    )
+                  ) {
+                    return false;
+                  }
+                }
+
+                // Message remoteJid check in #main
+                const msgs = el.querySelectorAll('[data-id*="@c.us"], [data-id*="@g.us"], [data-id*="@s.whatsapp.net"]');
+                for (let i = msgs.length - 1; i >= Math.max(0, msgs.length - 8); i--) {
+                  const dId = msgs[i].getAttribute("data-id") || "";
+                  if (/^(?:true|false)_\\d+@(c\\.us|s\\.whatsapp\\.net)/.test(dId)) {
+                    return false;
+                  }
+                  if (/^(?:true|false)_\\d+@g\\.us/.test(dId)) {
+                    return true;
+                  }
+                }
+
+                // Footer admin notice
+                const footer = el.querySelector("footer");
+                if (footer) {
+                  const fTxt = (footer.textContent || "").toLowerCase();
+                  if (fTxt.includes("somente admins") || fTxt.includes("only admins")) return true;
+                }
+
+                return false;
+              }
+
+              isGroup = checkIfGroup(mainEl);
+
+              const header = mainEl.querySelector("header");
+              if (header) {
+                const titleEl = header.querySelector(
+                  'span[dir="auto"][title], div[role="button"] span[title], span[title], h2, [data-testid="conversation-info-header"]'
+                );
+                if (titleEl) {
+                  name = (titleEl.getAttribute("title") || titleEl.textContent || "").trim();
+                } else {
+                  const anySpan = header.querySelector('span[dir="auto"]');
+                  if (anySpan) name = anySpan.textContent.trim();
+                }
+
+                phone = extractPhoneFromText(name);
+                if (!phone) {
+                  const headerSpans = header.querySelectorAll("span");
+                  for (const s of headerSpans) {
+                    if (s.children.length > 2) continue;
+                    const found = extractPhoneFromText(s.textContent || "");
+                    if (found) {
+                      phone = found;
+                      break;
+                    }
+                  }
+                }
+              }
+
+              if (!phone && name && window.__zapprPhoneCache && window.__zapprPhoneCache[name]) {
+                phone = window.__zapprPhoneCache[name];
+              }
+
+              const hasRealName = Boolean(name && /[a-zA-Z\\u00C0-\\u017F]{2,}/.test(name) && !name.includes("+"));
+              if (!phone && !hasRealName && !isGroup) {
+                const msgEls = mainEl.querySelectorAll(
+                  '[data-id*="@c.us"], [data-id*="@s.whatsapp.net"]'
+                );
+                for (let i = msgEls.length - 1; i >= 0; i--) {
+                  const dataId = msgEls[i].getAttribute("data-id") || "";
+                  const m = /^false_(\\d{8,16})@(c\\.us|s\\.whatsapp\\.net)/.exec(dataId);
+                  if (m && m[1]) {
+                    phone = m[1];
+                    break;
+                  }
+                }
+              }
+
+              if (!phone && !isGroup) {
+                const drawer = document.querySelector(
+                  '[data-testid="contact-info-drawer"], [data-testid="chat-info-drawer"], [data-testid="drawer-right"]'
+                );
+                if (drawer) {
+                  const spans = drawer.querySelectorAll("span, div, p");
+                  for (const s of spans) {
+                    if (s.children.length > 2) continue;
+                    const found = extractPhoneFromText(s.textContent || "");
+                    if (found) {
+                      phone = found;
+                      if (name) {
+                        window.__zapprPhoneCache = window.__zapprPhoneCache || {};
+                        window.__zapprPhoneCache[name] = found;
+                      }
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+
+            return { unread, isQrWaiting: hasQr, hasActiveChat, isGroup, phone, name };
+
           } catch (_) {
-            return { unread: 0, isQrWaiting: false };
+            return { unread: 0, isQrWaiting: false, hasActiveChat: false, isGroup: false, phone: "", name: "" };
           }
         })()
       `,
@@ -234,6 +458,22 @@ function pollSessionUnreadCounts() {
         if (sessionQrWaiting.get(id) !== isQr) {
           sessionQrWaiting.set(id, isQr);
           broadcastSessionStatus(id, isQr);
+        }
+
+        const curChat = sessionActiveChat.get(id);
+        const resolvedIsGroup = Boolean(data.isGroup);
+
+        const chatData = {
+          hasActiveChat: Boolean(data.hasActiveChat),
+          isGroup: resolvedIsGroup,
+          phone: data.phone || (curChat && curChat.name === data.name ? curChat.phone : "") || "",
+          name: data.name || "",
+        };
+        const curJson = curChat ? JSON.stringify(curChat) : "";
+        const newJson = JSON.stringify(chatData);
+        if (curJson !== newJson) {
+          sessionActiveChat.set(id, chatData);
+          broadcastActiveChatState(id, chatData);
         }
       })
       .catch(() => {});
@@ -638,6 +878,12 @@ function switchSessionTab(desktopId) {
 
   try {
     currentMainWindow.webContents.send("sessions:active-changed", targetId);
+    const curChat = sessionActiveChat.get(targetId) || {
+      hasActiveChat: false,
+      phone: "",
+      name: "",
+    };
+    broadcastActiveChatState(targetId, curChat);
   } catch {
     // Window may be closing
   }
@@ -698,6 +944,13 @@ function createMainWindow(config) {
   currentMainWindow = win;
   currentConfig = config;
   activeSessionId = "zappr";
+
+  try {
+    const { initCustomButtonsIPC } = require("../customButtons");
+    initCustomButtonsIPC();
+  } catch (err) {
+    console.error("Error initializing customButtons:", err);
+  }
 
   // Initialize main session view first
   getOrCreateSessionView("zappr");

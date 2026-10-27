@@ -34,3 +34,23 @@ contextBridge.exposeInMainWorld("sessionsSidebar", {
   onStatusUpdated: (callback) =>
     ipcRenderer.on("sessions:status-updated", (_event, data) => callback(data)),
 });
+
+contextBridge.exposeInMainWorld("customButtons", {
+  list: (activeSessionId) => ipcRenderer.invoke("customButtons:list", activeSessionId),
+  openAdd: (currentSessionId) =>
+    ipcRenderer.invoke("customButtons:open-add", currentSessionId),
+  openEdit: (buttonId) => ipcRenderer.invoke("customButtons:open-edit", buttonId),
+  delete: (buttonId) => ipcRenderer.invoke("customButtons:delete", buttonId),
+  execute: (buttonId) => ipcRenderer.invoke("customButtons:execute", buttonId),
+  showContextMenu: (buttonId) =>
+    ipcRenderer.send("customButtons:context-menu", buttonId),
+  getChatStatus: (desktopId) =>
+    ipcRenderer.invoke("session:get-active-chat-status", desktopId),
+  onChanged: (callback) =>
+    ipcRenderer.on("customButtons:changed", () => callback()),
+  onChatStatusChanged: (callback) =>
+    ipcRenderer.on("session:chat-status-changed", (_event, data) =>
+      callback(data),
+    ),
+});
+

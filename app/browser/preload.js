@@ -1,6 +1,8 @@
+/* global window */
 "use strict";
 
 const { ipcRenderer, webFrame } = require("electron");
+
 
 function injectMainWorldScripts() {
   const code = `
@@ -279,13 +281,238 @@ function syncUnreadCount() {
   }
 }
 
+function extractPhoneFromText(str) {
+  if (!str) return "";
+  const intl = /\+[\d\s()–—-]{6,25}/.exec(str);
+  if (intl) {
+    const digits = intl[0].replace(/\D/g, "");
+    if (digits.length >= 8 && digits.length <= 16) return digits;
+  }
+  const allDigits = str.replace(/\D/g, "");
+  if (allDigits.length >= 10 && allDigits.length <= 16) {
+    const letterCount = (str.match(/[a-zA-Z\u00C0-\u017F]/g) || []).length;
+    if (letterCount <= 3) return allDigits;
+  }
+  return "";
+}
+
+function checkIfGroup(el) {
+  if (!el) return false;
+
+  const hdr = el.querySelector("header");
+  if (hdr) {
+    // 1. Explicit contact signals (cannot be a group)
+    if (hdr.querySelector('[data-icon*="default-user"], [data-testid*="default-user"]')) {
+      return false;
+    }
+    const hdrText = (hdr.textContent || "").toLowerCase();
+    if (
+      hdrText.includes("online") ||
+      hdrText.includes("visto por") ||
+      hdrText.includes("last seen")
+    ) {
+      return false;
+    }
+
+    // 2. Explicit group signals in header
+    if (
+      hdr.querySelector(
+        '[data-icon*="group"], [data-testid*="group"], [data-icon*="community"], [data-testid*="community"]',
+      )
+    ) {
+      return true;
+    }
+    if (
+      hdrText.includes("dados do grupo") ||
+      hdrText.includes("group info") ||
+      hdrText.includes("informações do grupo") ||
+      hdrText.includes("información del grupo") ||
+      hdrText.includes("admin do grupo") ||
+      hdrText.includes("group admin") ||
+      hdrText.includes("somente admins") ||
+      hdrText.includes("only admins") ||
+      hdrText.includes("participantes") ||
+      hdrText.includes("participants")
+    ) {
+      return true;
+    }
+    if (/(?:^|\s)(?:você|you|tú),\s/i.test(hdrText)) {
+      return true;
+    }
+  }
+
+  // 3. Active chat row in sidebar
+  const selRow = document.querySelector(
+    '#pane-side [aria-selected="true"], #pane-side div[role="listitem"].active, #pane-side div[role="row"][aria-selected="true"]',
+  );
+  if (selRow) {
+    const rowId = selRow.getAttribute("data-id") || selRow.querySelector("[data-id]")?.getAttribute("data-id") || "";
+    if (rowId.includes("@c.us") || rowId.includes("@s.whatsapp.net")) return false;
+    if (rowId.includes("@g.us")) return true;
+    if (
+      selRow.querySelector(
+        '[data-icon*="group"], [data-testid*="group"], [data-icon*="community"], [data-testid*="community"]',
+      )
+    ) {
+      return true;
+    }
+    if (
+      selRow.querySelector(
+        '[data-icon*="default-user"], [data-testid*="default-user"]',
+      )
+    ) {
+      return false;
+    }
+  }
+
+  // 4. Message remoteJid check in #main
+  const msgs = el.querySelectorAll('[data-id*="@c.us"], [data-id*="@g.us"], [data-id*="@s.whatsapp.net"]');
+  for (let i = msgs.length - 1; i >= Math.max(0, msgs.length - 8); i--) {
+    const dId = msgs[i].getAttribute("data-id") || "";
+    if (/^(?:true|false)_\d+@(c\.us|s\.whatsapp\.net)/.test(dId)) {
+      return false;
+    }
+    if (/^(?:true|false)_\d+@g\.us/.test(dId)) {
+      return true;
+    }
+  }
+
+  // 5. Footer admin notice
+  const footer = el.querySelector("footer");
+  if (footer) {
+    const fTxt = (footer.textContent || "").toLowerCase();
+    if (fTxt.includes("somente admins") || fTxt.includes("only admins")) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function extractCurrentChatInfo() {
+  try {
+    const mainEl = document.querySelector("#main");
+    if (!mainEl) {
+      return { hasActiveChat: false, isGroup: false, phone: "", name: "", isRawPhone: false };
+    }
+
+    window.__zapprPhoneCache = window.__zapprPhoneCache || {};
+
+    let phone = "";
+    let name = "";
+    let isRawPhone = false;
+
+    const header = mainEl.querySelector("header");
+    if (header) {
+      const titleEl = header.querySelector(
+        'span[dir="auto"][title], div[role="button"] span[title], span[title], h2, [data-testid="conversation-info-header"]',
+      );
+      if (titleEl) {
+        name = (
+          titleEl.getAttribute("title") ||
+          titleEl.textContent ||
+          ""
+        ).trim();
+      } else {
+        const anySpan = header.querySelector('span[dir="auto"]');
+        if (anySpan) name = anySpan.textContent.trim();
+      }
+
+      phone = extractPhoneFromText(name);
+      if (phone) {
+        isRawPhone = true;
+      } else {
+        const headerSpans = header.querySelectorAll("span");
+        for (const s of headerSpans) {
+          if (s.children.length > 2) continue;
+          const found = extractPhoneFromText(s.textContent || "");
+          if (found) {
+            phone = found;
+            isRawPhone = true;
+            break;
+          }
+        }
+      }
+    }
+
+    const isGroup = checkIfGroup(mainEl);
+
+    if (!phone && name && window.__zapprPhoneCache[name]) {
+      phone = window.__zapprPhoneCache[name];
+    }
+
+    const hasRealName = Boolean(name && /[a-zA-Z\u00C0-\u017F]{2,}/.test(name) && !name.includes("+"));
+    if (!phone && !hasRealName && !isGroup) {
+      const msgEls = mainEl.querySelectorAll(
+        '[data-id*="@c.us"], [data-id*="@s.whatsapp.net"]',
+      );
+      for (let i = msgEls.length - 1; i >= 0; i--) {
+        const dataId = msgEls[i].getAttribute("data-id") || "";
+        const m = /^false_(\d{8,16})@(c\.us|s\.whatsapp\.net)/.exec(dataId);
+        if (m && m[1]) {
+          phone = m[1];
+          isRawPhone = true;
+          break;
+        }
+      }
+    }
+
+    if (!phone && !isGroup) {
+      const drawer = document.querySelector(
+        '[data-testid="contact-info-drawer"], [data-testid="chat-info-drawer"], [data-testid="drawer-right"]',
+      );
+      if (drawer) {
+        const spans = drawer.querySelectorAll("span, div, p");
+        for (const s of spans) {
+          if (s.children.length > 2) continue;
+          const found = extractPhoneFromText(s.textContent || "");
+          if (found) {
+            phone = found;
+            if (name) window.__zapprPhoneCache[name] = found;
+            break;
+          }
+        }
+      }
+    }
+
+    return { hasActiveChat: true, isGroup, phone, name, isRawPhone };
+  } catch {
+    return {
+      hasActiveChat: Boolean(document.querySelector("#main")),
+      isGroup: false,
+      phone: "",
+      name: "",
+      isRawPhone: false,
+    };
+  }
+}
+
+let lastChatStateJson = null;
+
+function syncActiveChatState() {
+  const current = extractCurrentChatInfo();
+  const json = JSON.stringify(current);
+  if (json !== lastChatStateJson) {
+    lastChatStateJson = json;
+    try {
+      ipcRenderer.send("session:active-chat-changed", current);
+    } catch {
+      // IPC send error during destruction
+    }
+  }
+}
+
 function initUnreadTracker() {
   syncUnreadCount();
+  syncActiveChatState();
 
   // Watch document.title mutations
   const titleEl = document.querySelector("title");
   if (titleEl) {
-    const titleObs = new MutationObserver(() => syncUnreadCount());
+    const titleObs = new MutationObserver(() => {
+      syncUnreadCount();
+      syncActiveChatState();
+    });
     titleObs.observe(titleEl, {
       childList: true,
       characterData: true,
@@ -301,13 +528,26 @@ function initUnreadTracker() {
       debounceTimer = setTimeout(() => {
         debounceTimer = null;
         syncUnreadCount();
+        syncActiveChatState();
       }, 250);
     });
     bodyObs.observe(document.body, { childList: true, subtree: true });
+
+    document.addEventListener("click", () => {
+      setTimeout(syncActiveChatState, 150);
+    });
+    document.addEventListener("keyup", (e) => {
+      if (e.key === "Escape" || e.key === "Enter") {
+        setTimeout(syncActiveChatState, 150);
+      }
+    });
   }
 
   // Periodic heartbeat every 1s to guarantee real-time sync
-  setInterval(syncUnreadCount, 1000);
+  setInterval(() => {
+    syncUnreadCount();
+    syncActiveChatState();
+  }, 1000);
 }
 
 if (document.readyState === "loading") {
@@ -319,3 +559,4 @@ if (document.readyState === "loading") {
   injectMainWorldScripts();
   initUnreadTracker();
 }
+

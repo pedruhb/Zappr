@@ -29,6 +29,7 @@ const browserGlobals = {
   DOMParser: "readonly",
   localStorage: "readonly",
   MutationObserver: "readonly",
+  console: "readonly",
 };
 
 export default [
@@ -49,6 +50,7 @@ export default [
       "app/sessions/modal.js",
       "app/sessions/delete-modal.js",
       "app/about/modal.js",
+      "app/customButtons/modal.js",
     ],
     languageOptions: {
       ecmaVersion: 2023,
@@ -74,6 +76,7 @@ export default [
       "app/sessions/modal.js",
       "app/sessions/delete-modal.js",
       "app/about/modal.js",
+      "app/customButtons/modal.js",
     ],
     languageOptions: {
       ecmaVersion: 2023,

@@ -1,6 +1,6 @@
 {
   "name": "zappr",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Cliente desktop moderno para WhatsApp Web (Electron), com suporte a múltiplas sessões isoladas, distribuição inteligente de links e controle de áudio individual.",
   "main": "app/index.js",
   "desktopName": "zappr.desktop",

@@ -95,6 +95,14 @@ function buildTemplate(win) {
         label: t("menu.importSettings"),
         click: () => importBackup(win),
       },
+      { type: "separator" },
+      {
+        label: "Novo botão personalizado...",
+        click: () => {
+          const { openCustomButtonModal } = require("../customButtons");
+          openCustomButtonModal(win, { mode: "create" });
+        },
+      },
     ],
     sessions: [
       { label: t("menu.whatsappLinks"), click: () => openSettingsDialog() },
